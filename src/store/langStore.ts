@@ -53,7 +53,7 @@ export const translations: Record<Language, any> = {
       price: "Precio"
     },
     gallery: {
-  title: "Gallerya Creativa",
+  title: "Galleria Creativa",
   subtitle: "Proyectos Recientes",
   viewWork: "Ver Detalle"
 },contact: {

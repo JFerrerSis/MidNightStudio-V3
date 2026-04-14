@@ -4,20 +4,20 @@ import { ShoppingCart, Menu, X, Languages, Sun, Moon, LayoutGrid, BookOpen, Sett
 
 const navI18n = {
   es: [
-    { label: 'Explorar', slug: '/', icon: LayoutGrid },
-    { label: 'Catálogo', slug: '/catalogo', icon: BookOpen },
-    { label: 'Servicios', slug: '/#servicios', icon: Settings },
-    { label: 'Nosotros', slug: '/#nosotros', icon: Users },
+    { label: 'Inicio', slug: '#inicio', icon: LayoutGrid },
+    { label: 'Servicios', slug: '#servicios', icon: Settings },
+    { label: 'Catalogo', slug: '/catalogo', icon: ShoppingCart },
+    { label: 'Nosotros', slug: '#nosotros', icon: Users },
     { label: 'Galería', slug: '#galeria', icon: BookOpen },
-    { label: 'Contacto', slug: '/#contacto', icon: Mail }
+    { label: 'Contacto', slug: '#contacto', icon: Mail }
   ],
   en: [
-    { label: 'Explore', slug: '/', icon: LayoutGrid },
-    { label: 'Catalog', slug: '/catalogo', icon: BookOpen },
-    { label: 'Services', slug: '/#services', icon: Settings },
-    { label: 'About Us', slug: '/#about-us', icon: Users },
+    { label: 'Home', slug: '#inicio', icon: LayoutGrid },
+    { label: 'Services', slug: '#servicios', icon: Settings },
+    { label: 'Catalog', slug: '/catalogo', icon: ShoppingCart },
+    { label: 'About', slug: '#nosotros', icon: Users },
     { label: 'Gallery', slug: '#galeria', icon: BookOpen },
-    { label: 'Contact', slug: '/#contact', icon: Mail }
+    { label: 'Contact', slug: '#contacto', icon: Mail }
   ]
 };
 ---
@@ -44,7 +44,7 @@ const navI18n = {
 
     <nav class="hidden md:flex items-center bg-white/5 px-2 py-1 rounded-full border border-white/5">
       {navI18n.es.map((item, index) => (
-        <a href={item.slug} class="nav-link px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-main-text/40 hover:text-cyan-400 transition-all" data-index={index}>
+        <a href={item.slug} class="nav-link px-3 lg:px-4 py-2 text-[9px] lg:text-[10px] font-bold uppercase tracking-[0.2em] text-main-text/40 hover:text-cyan-400 transition-all" data-index={index}>
           <span class="nav-text-content">{item.label}</span>
         </a>
       ))}
@@ -83,16 +83,12 @@ const navI18n = {
 </header>
 
 <style>
-  /* Forzamos fondo sólido para evitar que se vea el catálogo a través del menú */
   .bg-solid-menu {
-    background-color: #ffffff !important; /* Modo claro */
+    background-color: #ffffff !important;
   }
-
   :root[data-theme="dark"] .bg-solid-menu {
-    background-color: #0a0a0a !important; /* Modo oscuro sólido */
+    background-color: #0a0a0a !important;
   }
-
-  /* Quitamos cualquier blur que herede del header para asegurar opacidad */
   #mobile-menu {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -102,12 +98,12 @@ const navI18n = {
 <script>
   import gsap from 'gsap';
   import { cartItems } from '../../store/cartStore';
-  import { currentLang, type Language } from '../../store/langStore'; // Importamos el tipo Language
+  import { currentLang, type Language } from '../../store/langStore';
 
-  // Definimos el tipo de las traducciones para evitar el error 7053
+  // Sincronizado exactamente con los 6 items de navI18n
   const translations: Record<Language, string[]> = {
-    es: ['Explorar', 'Catálogo', 'Servicios', 'Nosotros', 'Contacto'],
-    en: ['Explore', 'Catalog', 'Services', 'About Us', 'Contact']
+    es: ['Inicio', 'Servicios', 'Catalogo', 'Nosotros', 'Galería', 'Contacto'],
+    en: ['Home', 'Services', 'Catalog', 'About', 'Gallery', 'Contact']
   };
 
   const menuToggle = document.getElementById('menu-toggle');
@@ -122,44 +118,26 @@ const navI18n = {
 
   let isMenuOpen = false;
 
-  // 1. LÓGICA DE ACTUALIZACIÓN (Híbrida: Evento + Store)
-  // Especificamos que lang es de tipo Language para eliminar el error 7006
   const updateLang = (lang: Language) => {
     if (langLabel) langLabel.innerText = lang.toUpperCase();
     
     document.querySelectorAll('[data-index]').forEach(el => {
       const idx = parseInt(el.getAttribute('data-index') || '0');
       const textSpan = el.querySelector('.nav-text-content') || el.querySelector('.mobile-text-content');
-      // Ahora TS sabe que lang es válido para indexar translations
-      if (textSpan) textSpan.textContent = translations[lang][idx];
+      if (textSpan && translations[lang][idx]) {
+        textSpan.textContent = translations[lang][idx];
+      }
     });
 
-    // Guardar estado
     localStorage.setItem('selected-lang', lang);
-
-    // Actualizar Store (Para el Catálogo)
     currentLang.set(lang);
-
-    // Disparar Evento (Para Hero y Services)
     window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
   };
 
-  // 2. EVENTO DEL BOTÓN
   langSwitch?.addEventListener('click', () => {
     const current = (localStorage.getItem('selected-lang') as Language) || 'es';
     const nextLang: Language = current === 'es' ? 'en' : 'es';
     updateLang(nextLang);
-  });
-
-  // 3. CARRITO Y MENÚ (Sin cambios, solo lógica funcional)
-  cartBtn?.addEventListener('click', () => {
-    window.dispatchEvent(new CustomEvent('toggleCart'));
-  });
-
-  cartItems.subscribe(items => {
-    if (cartCount) {
-      items.length > 0 ? cartCount.classList.remove('hidden') : cartCount.classList.add('hidden');
-    }
   });
 
   const toggleMenu = () => {
@@ -178,13 +156,15 @@ const navI18n = {
     }
   };
 
+  document.querySelectorAll('.mobile-link').forEach(link => {
+    link.addEventListener('click', () => { if(isMenuOpen) toggleMenu(); });
+  });
+
   menuToggle?.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
 
-  // Inicialización
   const savedLang = (localStorage.getItem('selected-lang') as Language) || 'es';
   updateLang(savedLang);
 
-  // TEMA
   const applyTheme = (theme: string) => {
     const isDark = theme === 'dark';
     document.documentElement.setAttribute('data-theme', theme);
