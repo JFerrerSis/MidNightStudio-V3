@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colores base que no cambian */
+  --color-cyan-500: #06b6d4;
+  --color-emerald-500: #10b981;
+  
+  /* Definimos variables semánticas */
+  --color-main-bg: var(--bg-color);
+  --color-main-text: var(--text-color);
+  --color-main-border: var(--border-color);
+}
+
+/* Configuramos los temas */
+:root {
+  /* Modo Oscuro por defecto (Midnight) */
+  --bg-color: #050505;
+  --text-color: #f8fafc;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --header-bg: rgba(5, 5, 5, 0.8);
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  /* Modo Claro (Luxury Silk) */
+  --bg-color: #fcfcfc;
+  --text-color: #0f172a;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --header-bg: rgba(252, 252, 252, 0.8);
+  color-scheme: light;
+}
+
+@layer base {
+  body {
+    @apply bg-main-bg text-main-text transition-colors duration-500 antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .header-scrolled {
+    background-color: var(--header-bg);
+    @apply py-4 backdrop-blur-2xl border-b border-main-border;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-indicator {
+    @apply absolute bottom-0 left-0 w-0 h-px bg-linear-to-r from-cyan-500 to-emerald-500 transition-all duration-500;
+  }
+
+  /* Ajuste automático de opacidad en orbes para modo claro */
+  [data-theme="light"] .hero-orb {
+    @apply opacity-30;
+  }
+}

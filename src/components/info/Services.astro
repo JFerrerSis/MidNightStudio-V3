@@ -1,0 +1,152 @@
+---
+import { Shirt, Coffee, Palette, Image as ImageIcon, Layout, Box } from '@lucide/astro';
+
+const services = [
+  { id: 0, icon: Shirt },
+  { id: 1, icon: Coffee },
+  { id: 2, icon: Palette },
+  { id: 3, icon: ImageIcon },
+  { id: 4, icon: Layout },
+  { id: 5, icon: Box }
+];
+---
+
+<section id="servicios" class="relative py-20 px-4 sm:px-6 overflow-hidden bg-main-bg transition-colors duration-500">
+  <div class="max-w-6xl mx-auto">
+    
+    <div class="text-center mb-12 space-y-3 reveal-header">
+
+      <h3 class="text-2xl sm:text-5xl font-bold text-main-text tracking-tight">
+        Servicios de <span class="text-transparent bg-clip-text bg-linear-to-r from-main-text to-cyan-500/50">Personalización</span>
+      </h3>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+      {services.map((service) => (
+        <div 
+          class="service-card group relative p-4 sm:p-8 rounded-[1.8rem] sm:rounded-[2.5rem] bg-card-bg border border-white/5 transition-all duration-500 active:scale-95 overflow-hidden flex flex-col items-center text-center lg:items-start lg:text-left h-full shadow-sm"
+          data-service-index={service.id}
+        >
+          <div class="mb-4 sm:mb-6 relative w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-xl sm:rounded-3xl bg-cyan-500/10 text-cyan-500 group-hover:scale-110 transition-transform duration-500 shrink-0">
+            <service.icon class="w-5 h-5 sm:w-7 sm:h-7 drop-shadow-[0_0_8px_rgba(6,182,212,0.4)]" />
+          </div>
+
+          <div class="flex flex-col grow">
+            <h4 class="service-title text-[11px] sm:text-xl font-black sm:font-bold text-main-text mb-2 group-hover:text-cyan-500 transition-colors uppercase sm:normal-case tracking-wider sm:tracking-normal leading-tight">
+              ---
+            </h4>
+            
+            <p class="service-desc text-[9px] sm:text-sm text-main-text/50 leading-relaxed font-light line-clamp-3 sm:line-clamp-none">
+              ---
+            </p>
+          </div>
+
+          <div class="mt-4 w-6 h-0.5 sm:h-1 bg-cyan-500/20 group-hover:w-full group-hover:bg-cyan-500/40 transition-all duration-700 rounded-full"></div>
+
+          <div class="absolute inset-0 bg-linear-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const translations = {
+    es: {
+      titles: ["Textil & Estampado", "Mugs & Tazas", "Diseño Gráfico", "Fotos Polaroid", "Láminas de Aluminio", "Papelería Creativa"],
+      descs: [
+        "Sublimación y DFT de alta definición en franelas y prendas.",
+        "Personalización premium de tazas con colores vibrantes.",
+        "Vectorización y artes listos para impresión profesional.",
+        "Fotos tipo Polaroid con laminados de alta protección.",
+        "Impresiones de lujo sobre aluminio para reconocimientos.",
+        "Stickers y empaques que elevan tu identidad de marca."
+      ]
+    },
+    en: {
+      titles: ["Textiles & Printing", "Mugs & Cups", "Graphic Design", "Polaroid Photos", "Aluminum Sheets", "Creative Stationery"],
+      descs: [
+        "High-definition sublimation and DFT on various garments.",
+        "Premium customization of mugs with vibrant colors.",
+        "Professional vectorization and print-ready artwork.",
+        "Polaroid-style photos with protective special finishes.",
+        "Luxury aluminum prints for plaques and awards.",
+        "Custom stickers and packaging to boost your brand."
+      ]
+    }
+  };
+
+  const updateContent = () => {
+    const lang = (localStorage.getItem('selected-lang') as 'es' | 'en') || 'es';
+    document.querySelectorAll('[data-service-index]').forEach(el => {
+      const idx = parseInt(el.getAttribute('data-service-index') || '0');
+      const title = el.querySelector('.service-title');
+      const desc = el.querySelector('.service-desc');
+      if (title) title.textContent = translations[lang].titles[idx];
+      if (desc) desc.textContent = translations[lang].descs[idx];
+    });
+  };
+
+  const initAnimations = () => {
+    // Reset para evitar saltos visuales
+    gsap.set(".service-card", { y: 40, opacity: 0 });
+    gsap.set(".reveal-header", { y: 20, opacity: 0 });
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: "#servicios",
+        start: "top 85%",
+        toggleActions: "play none none none"
+      }
+    });
+
+    tl.to(".reveal-header", { y: 0, opacity: 1, duration: 0.8 })
+      .to(".service-card", { 
+        y: 0, 
+        opacity: 1, 
+        stagger: 0.1, 
+        duration: 0.6, 
+        ease: "back.out(1.2)",
+        clearProps: "transform" 
+      }, "-=0.4");
+  };
+
+  window.addEventListener('languageChanged', (e: any) => updateContent());
+  
+  document.addEventListener('astro:page-load', () => {
+    updateContent();
+    initAnimations();
+  });
+
+  // Ejecución inicial
+  updateContent();
+  initAnimations();
+</script>
+
+<style>
+  @reference "../../styles/global.css";
+
+  :root { --card-bg: #ffffff; --main-bg: #ffffff; }
+  :root[data-theme="dark"] { --card-bg: #0d0d0d; --main-bg: #050505; }
+
+  .bg-main-bg { background-color: var(--main-bg); }
+  .bg-card-bg { background-color: var(--card-bg); }
+
+  .service-card {
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  /* Efecto line-clamp para que el texto no rompa la caja en móviles */
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

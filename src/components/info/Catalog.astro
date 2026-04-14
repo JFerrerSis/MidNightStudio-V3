@@ -1,0 +1,102 @@
+---
+import productos from "../../data/productos.json";
+import { Plus, ShoppingBag } from '@lucide/astro';
+
+const allProducts = productos;
+const categories = ["Todos", ...new Set(allProducts.map(p => p.categoria))];
+---
+
+<div class="max-w-7xl mx-auto px-4 sm:px-8 py-12">
+  <div class="flex flex-col lg:flex-row gap-12">
+    
+    <aside class="lg:w-64 shrink-0">
+      <div class="sticky top-32 space-y-8">
+        <div>
+          <h2 class="text-xs font-black uppercase tracking-[0.3em] text-cyan-500 mb-2">Colecciones</h2>
+          <h3 class="text-4xl font-bold text-main-text tracking-tighter italic">Midnight</h3>
+        </div>
+        
+        <div class="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-4 lg:pb-0 scrollbar-hide">
+          {categories.map(cat => (
+            <button 
+              class="filter-btn text-left px-6 py-3 rounded-2xl border border-white/5 bg-card-bg text-main-text text-[10px] font-bold uppercase tracking-widest hover:border-cyan-500/50 hover:text-cyan-500 transition-all whitespace-nowrap"
+              data-category={cat}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+    </aside>
+
+    <div class="grow">
+      <div class="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-8" id="product-grid">
+        {allProducts.map(product => (
+          <div class="product-card group bg-card-bg rounded-[2.5rem] border border-white/5 overflow-hidden flex flex-col h-full transition-all duration-500 hover:-translate-y-2" data-cat={product.categoria}>
+            <div class="relative aspect-4/5 overflow-hidden">
+              <img src={product.imagen} alt={product.nombre} class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
+              <div class="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                <p class="text-white text-[10px] italic leading-relaxed">{product.descripcion}</p>
+              </div>
+            </div>
+            
+            <div class="p-6 flex flex-col grow">
+              <h4 class="text-sm sm:text-lg font-bold text-main-text mb-4 uppercase tracking-tight">{product.nombre}</h4>
+              <div class="mt-auto flex items-center justify-between">
+                <span class="text-xl font-black text-main-text">${product.precio.toFixed(2)}</span>
+                <button 
+                  class="add-to-cart-btn p-4 rounded-full bg-cyan-500/10 text-cyan-500 hover:bg-cyan-500 hover:text-white transition-all active:scale-90"
+                  data-product={JSON.stringify(product)}
+                >
+                  <Plus class="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { addToCart } from '../../store/cartStore';
+  import gsap from 'gsap';
+
+  // Lógica de Filtros
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.product-card');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const category = btn.getAttribute('data-category');
+      
+      gsap.to(cards, {
+        opacity: 0, scale: 0.9, duration: 0.2, stagger: 0.05,
+        onComplete: () => {
+          cards.forEach(card => {
+            const cardCat = (card as HTMLElement).dataset.cat;
+            (card as HTMLElement).style.display = (category === "Todos" || cardCat === category) ? "flex" : "none";
+          });
+          gsap.to(".product-card[style*='display: flex']", { opacity: 1, scale: 1, duration: 0.4, stagger: 0.05 });
+        }
+      });
+    });
+  });
+
+  // Agregar al Carrito
+  document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const data = JSON.parse(btn.getAttribute('data-product') || '{}');
+      addToCart({
+        id: data.id,
+        name: data.nombre,
+        price: data.precio,
+        img: data.imagen,
+        quantity: 1
+      });
+      // Abrir el modal automáticamente
+      window.dispatchEvent(new CustomEvent('toggleCart'));
+    });
+  });
+</script>

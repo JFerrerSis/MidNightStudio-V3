@@ -1,0 +1,35 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/ui/Header.astro";
+import CatalogComponent from "../components/info/Catalog.astro";
+import CartModal from "../components/info/CartModal.astro";
+---
+
+<Layout title="Catálogo Exclusivo | Midnight Studio">
+  <Header />
+  
+  <main class="min-h-screen bg-main-bg pt-24">
+    <div id="catalog-page-wrapper" class="opacity-0 translate-y-4 transition-all duration-700 ease-out">
+      <CatalogComponent />
+    </div>
+  </main>
+
+  <CartModal />
+</Layout>
+
+<script>
+  // Animación de entrada al cargar la página
+  document.addEventListener('astro:page-load', () => {
+    const wrapper = document.getElementById('catalog-page-wrapper');
+    if (wrapper) {
+      wrapper.classList.remove('opacity-0', 'translate-y-4');
+    }
+  });
+</script>
+
+<style>
+  /* Forzamos que el fondo sea consistente para la vista completa */
+  body {
+    background-color: var(--main-bg);
+  }
+</style>

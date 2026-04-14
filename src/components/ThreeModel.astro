@@ -1,0 +1,141 @@
+---
+// src/components/ThreeModel.astro
+interface Props {
+  modelPath: string;
+}
+const { modelPath } = Astro.props;
+---
+
+<div class="three-container relative w-full h-full min-h-125 flex items-center justify-center overflow-hidden bg-transparent cursor-grab active:cursor-grabbing group">
+  
+  <div id="loader-wrapper" class="absolute inset-0 flex flex-col items-center justify-center z-50 bg-white transition-opacity duration-700">
+    <div class="w-24 h-px bg-gray-100 relative overflow-hidden">
+      <div id="loader-bar" class="absolute top-0 left-0 h-full bg-emerald w-0 transition-all duration-300"></div>
+    </div>
+    <span class="text-[8px] uppercase tracking-[0.3em] mt-4 text-gray-400">Cargando Experiencia</span>
+  </div>
+
+  <canvas
+    class="three-canvas w-full h-full outline-none opacity-0 transition-opacity duration-1000"
+    data-model={modelPath}></canvas>
+
+  <div class="absolute bottom-10 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+    <span class="text-[9px] uppercase tracking-[0.2em] px-4 py-2 border border-black/5 rounded-full bg-white/50 backdrop-blur-md">
+      Arrastra para rotar 360°
+    </span>
+  </div>
+</div>
+
+<script>
+  import * as THREE from "three";
+  import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+  import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+
+  const canvases = document.querySelectorAll(".three-canvas");
+
+  canvases.forEach((canvasElement) => {
+    const canvas = canvasElement as HTMLCanvasElement;
+    const container = canvas.parentElement;
+    const loaderBar = container?.querySelector("#loader-bar") as HTMLElement;
+    const loaderWrapper = container?.querySelector("#loader-wrapper") as HTMLElement;
+    if (!container) return;
+
+    const modelPath = canvas.dataset.model || "";
+    const scene = new THREE.Scene();
+    
+    const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.set(0, 0, 4);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    
+    const updateSize = () => {
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    };
+    updateSize();
+
+    const controls = new OrbitControls(camera, canvas);
+    controls.enableDamping = true;
+    controls.enableZoom = false;
+    controls.minPolarAngle = Math.PI / 2; 
+    controls.maxPolarAngle = Math.PI / 2;
+
+    scene.add(new THREE.AmbientLight(0xffffff, 2.5));
+    const sun = new THREE.DirectionalLight(0xffffff, 2);
+    sun.position.set(5, 5, 5);
+    scene.add(sun);
+
+    const initApp = async () => {
+      try {
+        const textureLoader = new THREE.TextureLoader();
+        const gltfLoader = new GLTFLoader();
+
+        // Cargar Logo
+        if (loaderBar) loaderBar.style.width = "30%";
+        const logoTexture = await new Promise<THREE.Texture>((res) => textureLoader.load('/logolight.png', res));
+        logoTexture.flipY = false;
+
+        // Cargar Modelo
+        if (loaderBar) loaderBar.style.width = "60%";
+        const model = await new Promise<THREE.Group>((res) => 
+          gltfLoader.load(modelPath, (gltf) => res(gltf.scene))
+        );
+
+        model.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            (child as THREE.Mesh).material = new THREE.MeshStandardMaterial({
+              color: 0x666666, // Gris
+              roughness: 0.8,
+            });
+          }
+        });
+
+        // Auto-escala
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const scale = 3.0 / Math.max(size.x, size.y, size.z);
+        model.scale.setScalar(scale);
+        model.position.set(-center.x * scale, -center.y * scale, -center.z * scale);
+        scene.add(model);
+
+        // Crear Insignia
+        const badge = new THREE.Mesh(
+          new THREE.PlaneGeometry(1, 1),
+          new THREE.MeshBasicMaterial({ 
+            map: logoTexture, 
+            transparent: true, 
+            polygonOffset: true, 
+            polygonOffsetFactor: -15,
+            depthWrite: false 
+          })
+        );
+        badge.position.set(0, 0.4, 0.6); // Ajuste fino en el pecho
+        model.add(badge);
+
+        // Finalizar Carga
+        if (loaderBar) loaderBar.style.width = "100%";
+        setTimeout(() => {
+          loaderWrapper.style.opacity = "0";
+          setTimeout(() => loaderWrapper.remove(), 700);
+          canvas.classList.remove("opacity-0");
+        }, 500);
+
+        const animate = () => {
+          controls.update();
+          renderer.render(scene, camera);
+          requestAnimationFrame(animate);
+        };
+        animate();
+
+      } catch (e) { console.error(e); }
+    };
+
+    initApp();
+    window.addEventListener('resize', updateSize);
+  });
+</script>

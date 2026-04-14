@@ -1,0 +1,163 @@
+---
+// src/components/info/Hero.astro
+const i18n = {
+  es: {
+    title1: "Creamos",
+    title2: "el Futuro",
+    meta: "Arquitectura digital de <span class='text-main-text font-semibold'>alto impacto</span> y rendimiento optimizado.",
+    cta: "Iniciar Proyecto"
+  },
+  en: {
+    title1: "Building",
+    title2: "the Future",
+    meta: "High-impact <span class='text-main-text font-semibold'>digital architecture</span> and optimized performance.",
+    cta: "Start Project"
+  }
+};
+---
+
+<section id="hero" class="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-main-bg transition-colors duration-700">
+  
+  <div id="hero-bg" class="absolute inset-0 z-0 pointer-events-none">
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,var(--color-main-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-main-border)_1px,transparent_1px)] bg-size-[5rem_5rem] mask-radial opacity-[0.1] dark:opacity-[0.15]"></div>
+    <div class="hero-orb absolute top-[-10%] left-[-10%] w-[70vw] h-[70vw] bg-cyan-500/20 dark:bg-cyan-500/10 rounded-full blur-[120px]"></div>
+    <div class="hero-orb absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-emerald-500/20 dark:bg-emerald-500/10 rounded-full blur-[100px]"></div>
+  </div>
+
+  <div class="container mx-auto px-6 z-10 max-w-7xl">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      
+      <div id="hero-content-left" class="flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1">
+        <div id="hero-brand-wrapper" class="mb-6">
+          <div class="flex items-center gap-4">
+            <h2 class="text-[10px] font-black tracking-[0.8em] text-cyan-600 dark:text-cyan-400 uppercase">Midnight Studio</h2>
+            <span class="h-px w-16 bg-linear-to-r from-cyan-500/50 to-transparent"></span>
+          </div>
+        </div>
+
+        <h1 id="hero-title" class="text-[13vw] sm:text-7xl lg:text-7xl xl:text-8xl font-bold text-main-text leading-[1.1] tracking-tighter uppercase mb-8">
+          <div class="overflow-hidden py-1"> 
+            <span id="hero-t1" class="hero-anim-text inline-block translate-y-full opacity-0">{i18n.es.title1}</span>
+          </div>
+          <div class="overflow-hidden py-1 px-4 -ml-4"> 
+            <span id="hero-t2" class="hero-anim-text inline-block translate-y-full opacity-0 text-transparent bg-clip-text bg-linear-to-r from-cyan-600 via-emerald-500 to-cyan-500 dark:from-cyan-400 dark:via-emerald-400 dark:to-cyan-500 italic pr-4">
+              {i18n.es.title2}
+            </span>
+          </div>
+        </h1>
+
+        <div id="hero-meta-wrapper" class="opacity-0 translate-y-6 flex flex-col items-center lg:items-start w-full">
+            <p id="hero-meta-text" class="text-main-text/60 dark:text-main-text/70 text-sm sm:text-base tracking-[0.15em] uppercase font-medium mb-10 max-w-md leading-relaxed" set:html={i18n.es.meta} />
+            <div class="relative group active:scale-95 transition-transform duration-200">
+                <a href="#contacto" class="relative px-10 py-4 bg-main-text text-main-bg rounded-full font-bold text-[10px] tracking-[0.3em] uppercase flex items-center gap-3 border border-main-text/10">
+                    <span id="hero-cta-text">{i18n.es.cta}</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                </a>
+            </div>
+        </div>
+      </div>
+
+      <div id="hero-content-right" class="flex justify-center lg:justify-end items-center order-1 lg:order-2">
+        <div id="logo-container" class="relative">
+          <div class="absolute inset-0 bg-cyan-500/15 dark:bg-cyan-500/10 blur-[100px] rounded-full animate-pulse"></div>
+          <img src="/logodark.png" alt="Logo" id="hero-logo" class="relative w-56 h-56 sm:w-72 sm:h-72 lg:w-120 lg:h-120 object-contain will-change-transform" />
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+
+  const translations = {
+    es: { title1: "Creamos", title2: "el Futuro", meta: "Arquitectura digital de <span class='text-main-text font-semibold'>alto impacto</span> y rendimiento optimizado.", cta: "Iniciar Proyecto" },
+    en: { title1: "Building", title2: "the Future", meta: "High-impact <span class='text-main-text font-semibold'>digital architecture</span> and optimized performance.", cta: "Start Project" }
+  };
+
+  const initHero = () => {
+    const heroLogo = document.getElementById('hero-logo') as HTMLImageElement;
+    if (!heroLogo) return;
+
+    // --- 1. Cambio de SRC instantáneo (Sin animación de desaparición) ---
+    const syncLogo = () => {
+      const isDark = document.documentElement.classList.contains('dark') || 
+                     document.documentElement.getAttribute('data-theme') === 'dark';
+      heroLogo.src = isDark ? '/logodark.png' : '/logolight.png';
+    };
+
+    new MutationObserver(syncLogo).observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme'] });
+    syncLogo();
+
+    // --- 2. Animación de Entrada del Texto ---
+    const tl = gsap.timeline({ defaults: { ease: "expo.out", duration: 1.2 } });
+    tl.to("#hero-brand-wrapper", { opacity: 1, y: 0, delay: 0.2 })
+      .to(".hero-anim-text", { y: 0, opacity: 1, stagger: 0.15 }, "-=1")
+      .to("#hero-meta-wrapper", { opacity: 1, y: 0 }, "-=0.8");
+
+    // --- 3. Animación de Flotación (ACTIVA) ---
+    gsap.to(heroLogo, {
+      y: "-=25",
+      duration: 3,
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true
+    });
+
+    // --- 4. Rotación 3D con Mouse (ACTIVA) ---
+    window.addEventListener('mousemove', (e) => {
+      const x = (e.clientX / window.innerWidth - 0.5);
+      const y = (e.clientY / window.innerHeight - 0.5);
+      
+      gsap.to(heroLogo, {
+        x: x * 40,
+        y: y * 40, // Se suma a la flotación sine
+        rotationY: x * 25,
+        rotationX: -y * 25,
+        duration: 1.5,
+        ease: "power2.out",
+        transformPerspective: 1200
+      });
+      
+      gsap.to(".hero-orb", { x: x * 60, y: y * 60, duration: 2.5 });
+    });
+
+    // --- 5. Animación de Scroll ---
+    gsap.to("#hero-content-left", {
+      scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom center", scrub: true },
+      y: -100, opacity: 0, filter: "blur(10px)"
+    });
+
+    gsap.to("#logo-container", {
+      scrollTrigger: { trigger: "#hero", start: "top top", end: "bottom center", scrub: 1 },
+      y: -80, opacity: 0, scale: 0.8
+    });
+
+    // --- 6. Idioma ---
+    window.addEventListener('languageChanged', (e: any) => {
+      const texts = translations[e.detail.lang as 'es' | 'en'];
+      gsap.to([".hero-anim-text", "#hero-meta-text", "#hero-cta-text"], {
+        opacity: 0, duration: 0.3, onComplete: () => {
+          document.getElementById('hero-t1')!.innerText = texts.title1;
+          document.getElementById('hero-t2')!.innerText = texts.title2;
+          document.getElementById('hero-meta-text')!.innerHTML = texts.meta;
+          document.getElementById('hero-cta-text')!.innerText = texts.cta;
+          gsap.to([".hero-anim-text", "#hero-meta-text", "#hero-cta-text"], { opacity: 1, duration: 0.5 });
+        }
+      });
+    });
+  };
+
+  document.addEventListener('astro:page-load', initHero);
+  if (document.readyState !== 'loading') initHero();
+</script>
+
+<style>
+  @reference "../../styles/global.css";
+  .mask-radial { mask-image: radial-gradient(circle, black 35%, transparent 100%); }
+  #logo-container { perspective: 1200px; }
+  :root[data-theme="light"] #hero { background: radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%); }
+</style>

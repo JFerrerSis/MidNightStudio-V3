@@ -1,23 +1,64 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+---
+interface Props {
+    title: string;
+}
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+const { title } = Astro.props;
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+        
+        <title>{title}</title>
+    </head>
+    <body class="bg-white text-midnight-text antialiased">
+        <slot />
+
+        <style is:global>
+            /* Reset y utilidades básicas para animaciones fluidas */
+            :root {
+                --emerald: #10b981;
+                --midnight: #0f172a;
+            }
+
+            body {
+                overflow-x: hidden; /* Evita scrolls horizontales raros por las animaciones */
+            }
+
+            /* Mejora la selección de texto con los colores de Midnight Studio */
+            ::selection {
+                background-color: rgba(16, 185, 129, 0.2);
+                color: #0f172a;
+            }
+
+            /* Ocultar barra de scroll pero mantener funcionalidad (Opcional, muy pro) */
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+            .no-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        </style>
+
+        <script>
+            import gsap from 'gsap';
+            import { ScrollTrigger } from 'gsap/ScrollTrigger';
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Configuramos un suavizado global para los triggers si es necesario
+            ScrollTrigger.config({
+                autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"
+            });
+        </script>
+    </body>
+</html>

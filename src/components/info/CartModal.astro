@@ -1,0 +1,134 @@
+---
+import { X, Trash2, Send, ShoppingCart } from '@lucide/astro';
+---
+
+<div id="cart-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-100 hidden opacity-0 transition-all duration-500">
+  <div id="cart-panel" class="absolute right-0 top-0 h-full w-full max-w-lg bg-card-bg border-l border-white/10 p-8 flex flex-col translate-x-full transition-transform duration-500 ease-out">
+    
+    <div class="flex justify-between items-center mb-8">
+      <div class="flex items-center gap-3">
+        <ShoppingCart class="text-cyan-500 w-6 h-6" />
+        <h2 class="text-2xl font-bold text-main-text uppercase tracking-tighter italic">Tu Comanda</h2>
+      </div>
+      <button id="close-cart" class="p-2 hover:bg-white/5 rounded-full transition-colors">
+        <X class="text-main-text w-6 h-6" />
+      </button>
+    </div>
+
+    <div id="cart-items-container" class="grow overflow-y-auto pr-2 space-y-4 mb-8 scrollbar-hide">
+      </div>
+
+    <div class="border-t border-white/10 pt-6 space-y-6">
+      <div class="flex justify-between items-end">
+        <span class="text-main-text/40 text-xs uppercase font-black tracking-widest">Total a pagar</span>
+        <span id="cart-total-price" class="text-4xl font-black text-cyan-500 tracking-tighter">$0.00</span>
+      </div>
+
+      <form id="whatsapp-form" class="space-y-3">
+        <input type="text" id="client-name" placeholder="Nombre y Apellido" required 
+          class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-main-text outline-none focus:border-cyan-500 transition-colors text-sm" />
+        
+        <div class="grid grid-cols-2 gap-3">
+          <select id="order-method" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-main-text text-xs outline-none focus:border-cyan-500">
+            <option value="Delivery">🚀 Delivery</option>
+            <option value="Pickup">🏪 Pickup en Tienda</option>
+          </select>
+          <input type="date" id="order-date" required class="bg-white/5 border border-white/10 p-4 rounded-2xl text-main-text text-xs outline-none focus:border-cyan-500" />
+        </div>
+
+        <select id="order-payment" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-main-text text-xs outline-none focus:border-cyan-500">
+          <option value="Pago Móvil">💸 Pago Móvil</option>
+          <option value="Zelle">💵 Zelle</option>
+          <option value="Efectivo">💰 Efectivo</option>
+        </select>
+
+        <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-white font-black py-5 rounded-4xl flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg shadow-cyan-500/20 uppercase tracking-widest text-xs">
+          <Send class="w-4 h-4" />
+          Enviar Pedido a WhatsApp
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // IMPORTANTE: Asegúrate de que en cartStore.ts el tipo de ID sea 'string | number' 
+  // o simplemente 'string' para coincidir con tu JSON.
+  import { cartItems, removeFromCart, cartTotal } from '../../store/cartStore';
+
+  const overlay = document.getElementById('cart-overlay');
+  const panel = document.getElementById('cart-panel');
+  const container = document.getElementById('cart-items-container');
+  const totalDisplay = document.getElementById('cart-total-price');
+  const form = document.getElementById('whatsapp-form') as HTMLFormElement;
+
+  cartItems.subscribe(items => {
+    if (!container || !totalDisplay) return;
+    
+    if (items.length === 0) {
+      container.innerHTML = `<div class="h-40 flex items-center justify-center text-main-text/20 uppercase font-black text-xs tracking-widest text-center">Tu carrito está vacío</div>`;
+    } else {
+      container.innerHTML = items.map(item => `
+        <div class="flex items-center gap-4 bg-white/[0.02] p-4 rounded-4xl border border-white/5">
+          <img src="${item.img}" class="w-16 h-16 object-cover rounded-2xl" />
+          <div class="grow">
+            <h4 class="text-[10px] font-bold text-main-text uppercase tracking-tight">${item.name}</h4>
+            <p class="text-cyan-500 font-black text-sm">${item.quantity}x $${item.price.toFixed(2)}</p>
+          </div>
+          <button onclick="window.deleteItem('${item.id}')" class="p-3 text-white/10 hover:text-red-500 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+          </button>
+        </div>
+      `).join('');
+    }
+    totalDisplay.textContent = `$${cartTotal.get().toFixed(2)}`;
+  });
+
+  // SOLUCIÓN AL ERROR DE TIPOS: Pasamos el ID como string
+  (window as any).deleteItem = (id: string) => {
+    // Si tu store espera número, usa parseInt(id). Si tu JSON es string, déjalo así.
+    removeFromCart(id as any); 
+  };
+
+  window.addEventListener('toggleCart', () => {
+    const isHidden = overlay?.classList.contains('hidden');
+    if (isHidden) {
+      overlay?.classList.remove('hidden');
+      setTimeout(() => {
+        overlay?.classList.remove('opacity-0');
+        panel?.classList.remove('translate-x-full');
+      }, 10);
+    } else {
+      overlay?.classList.add('opacity-0');
+      panel?.classList.add('translate-x-full');
+      setTimeout(() => overlay?.classList.add('hidden'), 500);
+    }
+  });
+
+  document.getElementById('close-cart')?.addEventListener('click', () => window.dispatchEvent(new CustomEvent('toggleCart')));
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = {
+      name: (document.getElementById('client-name') as HTMLInputElement).value,
+      method: (document.getElementById('order-method') as HTMLSelectElement).value,
+      date: (document.getElementById('order-date') as HTMLInputElement).value,
+      payment: (document.getElementById('order-payment') as HTMLSelectElement).value,
+    };
+
+    let msg = `*MIDNIGHT STUDIO - PEDIDO*\n\n`;
+    msg += `👤 *Cliente:* ${data.name}\n`;
+    msg += `📍 *Entrega:* ${data.method}\n`;
+    msg += `📅 *Fecha:* ${data.date}\n`;
+    msg += `💳 *Pago:* ${data.payment}\n\n`;
+    msg += `📦 *Detalle:*\n`;
+    
+    cartItems.get().forEach(item => {
+      msg += `- ${item.quantity}x ${item.name} ($${(item.price * item.quantity).toFixed(2)})\n`;
+    });
+
+    msg += `\n💰 *TOTAL A PAGAR: $${cartTotal.get().toFixed(2)}*`;
+    
+    window.open(`https://wa.me/584120000000?text=${encodeURIComponent(msg)}`, '_blank');
+  });
+</script>
