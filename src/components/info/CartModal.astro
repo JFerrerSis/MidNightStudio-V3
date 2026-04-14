@@ -238,9 +238,10 @@ const allData = {
   });
 
   // --- 4. ENVÍO WHATSAPP ---
+// --- 4. ENVÍO WHATSAPP ---
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
-    const lang = currentLang.get();
+    const lang = currentLang.get() as Language; // Forzamos el tipo Language
     const items = cartItems.get();
     if (items.length === 0) return alert(lang === 'es' ? "Agrega productos primero" : "Add products first");
 
@@ -254,7 +255,8 @@ const allData = {
       address: addressField.value
     };
 
-    const t = translations[lang].cart;
+    // Acceso seguro al objeto de traducciones
+    const t = (translations[lang] as any).cart;
     const headerTitle = lang === 'es' ? 'PEDIDO' : 'ORDER';
     
     let msg = `*✨ MIDNIGHT STUDIO - ${headerTitle} ✨*\n\n`;

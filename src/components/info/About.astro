@@ -1,0 +1,145 @@
+---
+// src/components/info/About.astro
+import { Palette, Zap } from '@lucide/astro';
+
+const images = {
+  main: "/images/textil/oversize.jpeg", 
+  secondary: "/images/rigidos/lamina.jpeg"
+};
+---
+
+<section id="nosotros" class="relative py-24 px-6 overflow-hidden bg-main-bg">
+  <div class="container mx-auto max-w-7xl">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      
+      <div class="relative order-2 lg:order-1" id="about-visual-container">
+        <div class="absolute -top-10 -left-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
+        
+        <div class="relative z-10 grid grid-cols-2 gap-4 sm:gap-6 items-start">
+          <div class="space-y-4 sm:space-y-6 pt-12">
+            <div class="about-card-animate about-img-frame h-64 sm:h-80 rounded-4xl overflow-hidden border border-main-text/5 shadow-2xl" data-scroll-speed="1.2">
+                <img src={images.main} alt="Midnight Oversize" class="w-full h-full object-cover hover:scale-110 transition-transform duration-1000" />
+            </div>
+            <div class="about-card-animate about-stat-card h-40 bg-cyan-500 rounded-4xl flex flex-col items-center justify-center text-black p-6 shadow-xl shadow-cyan-500/20" data-scroll-speed="1.1">
+                <span class="text-4xl font-black italic tracking-tighter">100%</span>
+                <span class="text-[10px] uppercase font-black tracking-widest text-center" data-i18n="about.feature1">Calidad Premium</span>
+            </div>
+          </div>
+
+          <div class="space-y-4 sm:space-y-6">
+            <div class="about-card-animate about-stat-card h-40 bg-main-text/5 backdrop-blur-xl border border-main-text/5 rounded-4xl flex flex-col items-center justify-center p-6" data-scroll-speed="0.9">
+                <Palette class="w-8 h-8 text-cyan-500 mb-2" />
+                <span class="text-[9px] uppercase font-black tracking-[0.2em] text-main-text/40 text-center" data-i18n="about.feature2">Diseño Único</span>
+            </div>
+            <div class="about-card-animate about-img-frame h-80 sm:h-100 rounded-4xl overflow-hidden border border-main-text/5 shadow-2xl" data-scroll-speed="0.8">
+                <img src={images.secondary} alt="Midnight Rigid" class="w-full h-full object-cover hover:scale-110 transition-transform duration-1000" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col text-center lg:text-left order-1 lg:order-2" id="about-text-content">
+        <div class="about-reveal inline-flex items-center gap-3 mb-6 mx-auto lg:mx-0">
+          <span class="h-px w-8 bg-cyan-500"></span>
+          <span class="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-500" data-i18n="about.subtitle">Nuestra Esencia</span>
+        </div>
+
+        <h2 class="about-reveal text-4xl sm:text-6xl font-bold text-main-text tracking-tighter leading-[0.9] mb-8 uppercase italic" data-i18n="about.title">
+          Donde el Diseño <br/> encuentra la Materia
+        </h2>
+
+        <div class="space-y-6 max-w-xl mx-auto lg:mx-0">
+          <p class="about-reveal text-lg text-main-text/80 leading-relaxed font-light italic" data-i18n="about.p1">
+             En <span class='text-cyan-500 font-bold'>Midnight Studio</span>...
+          </p>
+          <p class="about-reveal text-sm text-main-text/40 leading-relaxed tracking-wide" data-i18n="about.p2">
+            Combinamos técnicas avanzadas...
+          </p>
+        </div>
+
+        <div class="about-reveal grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12 pt-12 border-t border-main-text/5">
+           <div class="flex flex-col items-center lg:items-start gap-2">
+              <Zap class="w-5 h-5 text-cyan-500" />
+              <span class="text-[10px] font-black uppercase tracking-widest text-main-text/60" data-i18n="about.feature3">Detalle</span>
+           </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { currentLang, translations, type Language } from '../../store/langStore';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const initAbout = () => {
+    // 1. Configuración de Animaciones GSAP
+    gsap.set("#about-visual-container", { perspective: 1500 });
+
+    const cards = gsap.utils.toArray('.about-card-animate') as HTMLElement[];
+    cards.forEach((card) => {
+      const speed = parseFloat(card.dataset.scrollSpeed || "1");
+      gsap.fromTo(card, 
+        { opacity: 0, y: 100 * (speed - 1), rotationX: -15, scale: 0.9 }, 
+        {
+          scrollTrigger: {
+            trigger: card,
+            start: "top 95%",
+            end: "bottom 60%",
+            scrub: 1.5,
+          },
+          opacity: 1,
+          y: -40 * (speed - 1),
+          rotationX: 0,
+          scale: 1,
+          ease: "power2.out"
+        }
+      );
+    });
+
+    gsap.from(".about-reveal", {
+      scrollTrigger: {
+        trigger: "#about-text-content",
+        start: "top 85%",
+        toggleActions: "play none none none",
+      },
+      y: 40,
+      opacity: 0,
+      stagger: 0.15,
+      duration: 1.2,
+      ease: "power4.out"
+    });
+
+    // 2. ESCUCHA ACTIVA DEL IDIOMA (NANOSTORES)
+    // Esto se dispara cada vez que currentLang.set() ocurre en el Header
+    currentLang.subscribe((lang: Language) => {
+      const content = translations[lang]?.about;
+      if (!content) return;
+
+      document.querySelectorAll('[data-i18n^="about."]').forEach(el => {
+        const key = el.getAttribute('data-i18n')?.split('.')[1];
+        if (key && content[key]) {
+          // Usamos innerHTML para las partes con diseño (como p1 y p2)
+          if (['p1', 'p2', 'title'].includes(key)) {
+            el.innerHTML = content[key];
+          } else {
+            el.textContent = content[key];
+          }
+        }
+      });
+    });
+  };
+
+  // Inicialización para Astro (soporta View Transitions)
+  document.addEventListener('astro:page-load', initAbout);
+  if (document.readyState !== 'loading') initAbout();
+</script>
+
+<style>
+  #about-visual-container { transform-style: preserve-3d; }
+  .about-card-animate img { will-change: transform; }
+</style>

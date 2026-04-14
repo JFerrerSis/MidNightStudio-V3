@@ -129,7 +129,7 @@ const services = [
   };
 
   // Escuchar el Store de Nanostores para cambio de idioma
-  currentLang.subscribe((lang) => {
+  currentLang.subscribe((lang: Language) => {
     updateContent(lang);
   });
   
