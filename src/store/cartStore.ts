@@ -1,18 +1,48 @@
 import { atom, computed } from 'nanostores';
 
 export interface CartItem {
-  id: number;
+  id: string;
   name: string;
   price: number;
   quantity: number;
   img: string;
 }
 
-export const cartItems = atom<CartItem[]>([]);
-export const isCartOpen = atom(false);
+const STORAGE_KEY = 'midnight_cart_data';
+const EXPIRATION_TIME = 20 * 60 * 1000; // 20 minutos en milisegundos
 
-// Agregar o incrementar cantidad
-export function addToCart(product: any) {
+// Función para cargar datos iniciales
+function getInitialCart() {
+  if (typeof window === 'undefined') return [];
+  
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (!saved) return [];
+
+  const { items, timestamp } = JSON.parse(saved);
+  const now = Date.now();
+
+  // Si pasaron más de 20 min, borrar y devolver vacío
+  if (now - timestamp > EXPIRATION_TIME) {
+    localStorage.removeItem(STORAGE_KEY);
+    return [];
+  }
+  
+  return items;
+}
+
+export const cartItems = atom<CartItem[]>(getInitialCart());
+
+// Suscripción automática: Cada vez que el carrito cambie, guardamos en LocalStorage
+cartItems.subscribe((items) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      items,
+      timestamp: Date.now() // Actualizamos el tiempo con cada acción
+    }));
+  }
+});
+
+export function addToCart(product: CartItem) {
   const currentItems = cartItems.get();
   const existingItem = currentItems.find(item => item.id === product.id);
 
@@ -25,12 +55,10 @@ export function addToCart(product: any) {
   }
 }
 
-// Eliminar producto
-export function removeFromCart(id: number) {
+export function removeFromCart(id: string) {
   cartItems.set(cartItems.get().filter(item => item.id !== id));
 }
 
-// Cálculo del Total
 export const cartTotal = computed(cartItems, (items) => 
   items.reduce((total, item) => total + (item.price * item.quantity), 0)
 );

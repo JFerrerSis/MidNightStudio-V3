@@ -1,27 +1,28 @@
 ---
+// src/components/ui/Header.astro
 import { ShoppingCart, Menu, X, Languages, Sun, Moon, LayoutGrid, BookOpen, Settings, Users, Mail } from '@lucide/astro';
 
 const navI18n = {
   es: [
-    { label: 'Explorar', slug: 'inicio', icon: LayoutGrid },
-    { label: 'Catálogo', slug: 'catalogo', icon: BookOpen },
-    { label: 'Servicios', slug: 'servicios', icon: Settings },
-    { label: 'Nosotros', slug: 'nosotros', icon: Users },
-    { label: 'Contacto', slug: 'contacto', icon: Mail }
+    { label: 'Explorar', slug: '/', icon: LayoutGrid },
+    { label: 'Catálogo', slug: '/catalogo', icon: BookOpen },
+    { label: 'Servicios', slug: '/#servicios', icon: Settings },
+    { label: 'Nosotros', slug: '/#nosotros', icon: Users },
+    { label: 'Contacto', slug: '/#contacto', icon: Mail }
   ],
   en: [
-    { label: 'Explore', slug: 'home', icon: LayoutGrid },
-    { label: 'Catalog', slug: 'catalog', icon: BookOpen },
-    { label: 'Services', slug: 'services', icon: Settings },
-    { label: 'About Us', slug: 'about-us', icon: Users },
-    { label: 'Contact', slug: 'contact', icon: Mail }
+    { label: 'Explore', slug: '/', icon: LayoutGrid },
+    { label: 'Catalog', slug: '/catalogo', icon: BookOpen },
+    { label: 'Services', slug: '/#services', icon: Settings },
+    { label: 'About Us', slug: '/#about-us', icon: Users },
+    { label: 'Contact', slug: '/#contact', icon: Mail }
   ]
 };
 ---
 
 <header 
   id="main-header" 
-  class="fixed top-4 md:top-6 left-1/2 -translate-x-1/2 w-[92%] max-w-6xl z-200 py-2 px-3 transition-all duration-500 rounded-full border border-white/10 bg-header-bg backdrop-blur-2xl shadow-2xl"
+  class="fixed top-4 md:top-6 left-1/2 -translate-x-1/2 w-[92%] max-w-6xl z-100 py-2 px-3 transition-all duration-500 rounded-full border border-white/10 bg-header-bg backdrop-blur-2xl shadow-2xl"
 >
   <div class="flex justify-between items-center relative h-10 md:h-12">
     
@@ -41,16 +42,16 @@ const navI18n = {
 
     <nav class="hidden md:flex items-center bg-white/5 px-2 py-1 rounded-full border border-white/5">
       {navI18n.es.map((item, index) => (
-        <a href={`#${item.slug}`} class="nav-link px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-main-text/40 hover:text-cyan-400 transition-all" data-index={index}>
+        <a href={item.slug} class="nav-link px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-main-text/40 hover:text-cyan-400 transition-all" data-index={index}>
           <span class="nav-text-content">{item.label}</span>
         </a>
       ))}
     </nav>
 
     <div class="flex items-center gap-1.5">
-      <button class="relative p-2.5 rounded-full bg-white/5 hover:bg-cyan-500/10 text-main-text/60 hover:text-cyan-400 transition-all cursor-pointer group">
+      <button id="cart-icon-btn" class="relative p-2.5 rounded-full bg-white/5 hover:bg-cyan-500/10 text-main-text/60 hover:text-cyan-400 transition-all cursor-pointer group">
         <ShoppingCart class="w-4 h-4" />
-        <span id="cart-count" class="hidden absolute top-0.5 right-0.5 bg-cyan-500 w-2 h-2 rounded-full border border-header-bg shadow-[0_0_8px_rgba(6,182,212,0.5)]"></span>
+        <span id="cart-count" class="hidden absolute top-0.5 right-0.5 bg-cyan-500 w-2 h-2 rounded-full border border-header-bg shadow-[0_0_8px_rgba(6,182,212,0.8)] animate-pulse"></span>
       </button>
 
       <button id="menu-toggle" class="md:hidden p-2 active:scale-75 transition-all cursor-pointer">
@@ -62,10 +63,13 @@ const navI18n = {
     </div>
   </div>
 
-  <div id="mobile-menu" class="fixed inset-x-0 top-[calc(100%+0.5rem)] z-300 bg-mobile-card border-2 border-white/5 rounded-[2.5rem] p-4 opacity-0 -translate-y-4 pointer-events-none transition-all duration-300 md:hidden shadow-2xl">
+  <div 
+    id="mobile-menu" 
+    class="fixed inset-x-0 top-[calc(100%+0.5rem)] z-200 rounded-[2.5rem] p-4 opacity-0 -translate-y-4 pointer-events-none transition-all duration-300 md:hidden shadow-[0_40px_80px_-15px_rgba(0,0,0,0.9)] bg-solid-menu border border-white/10"
+  >
     <div class="grid grid-cols-2 gap-3 w-full h-auto">
       {navI18n.es.map((item, index) => (
-        <a href={`#${item.slug}`} class="mobile-link flex flex-col items-center justify-center gap-3 p-5 rounded-[1.8rem] bg-option-bg border border-white/5 active:scale-95 transition-all" data-index={index}>
+        <a href={item.slug} class="mobile-link flex flex-col items-center justify-center gap-3 p-5 rounded-[1.8rem] bg-main-text/5 border border-main-text/5 active:scale-95 transition-all" data-index={index}>
            <item.icon class="w-6 h-6 text-cyan-500" />
            <span class="mobile-text-content text-[9px] font-black tracking-[0.15em] text-main-text uppercase text-center leading-tight">
              {item.label}
@@ -76,10 +80,30 @@ const navI18n = {
   </div>
 </header>
 
+<style>
+  /* Forzamos fondo sólido para evitar que se vea el catálogo a través del menú */
+  .bg-solid-menu {
+    background-color: #ffffff !important; /* Modo claro */
+  }
+
+  :root[data-theme="dark"] .bg-solid-menu {
+    background-color: #0a0a0a !important; /* Modo oscuro sólido */
+  }
+
+  /* Quitamos cualquier blur que herede del header para asegurar opacidad */
+  #mobile-menu {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+</style>
+
 <script>
   import gsap from 'gsap';
+  import { cartItems } from '../../store/cartStore';
+  import { currentLang, type Language } from '../../store/langStore'; // Importamos el tipo Language
 
-  const translations: Record<'es' | 'en', string[]> = {
+  // Definimos el tipo de las traducciones para evitar el error 7053
+  const translations: Record<Language, string[]> = {
     es: ['Explorar', 'Catálogo', 'Servicios', 'Nosotros', 'Contacto'],
     en: ['Explore', 'Catalog', 'Services', 'About Us', 'Contact']
   };
@@ -91,8 +115,50 @@ const navI18n = {
   const langLabel = document.getElementById('lang-label');
   const langSwitch = document.getElementById('lang-switch');
   const themeToggles = document.querySelectorAll('#theme-toggle');
+  const cartBtn = document.getElementById('cart-icon-btn');
+  const cartCount = document.getElementById('cart-count');
 
   let isMenuOpen = false;
+
+  // 1. LÓGICA DE ACTUALIZACIÓN (Híbrida: Evento + Store)
+  // Especificamos que lang es de tipo Language para eliminar el error 7006
+  const updateLang = (lang: Language) => {
+    if (langLabel) langLabel.innerText = lang.toUpperCase();
+    
+    document.querySelectorAll('[data-index]').forEach(el => {
+      const idx = parseInt(el.getAttribute('data-index') || '0');
+      const textSpan = el.querySelector('.nav-text-content') || el.querySelector('.mobile-text-content');
+      // Ahora TS sabe que lang es válido para indexar translations
+      if (textSpan) textSpan.textContent = translations[lang][idx];
+    });
+
+    // Guardar estado
+    localStorage.setItem('selected-lang', lang);
+
+    // Actualizar Store (Para el Catálogo)
+    currentLang.set(lang);
+
+    // Disparar Evento (Para Hero y Services)
+    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
+  };
+
+  // 2. EVENTO DEL BOTÓN
+  langSwitch?.addEventListener('click', () => {
+    const current = (localStorage.getItem('selected-lang') as Language) || 'es';
+    const nextLang: Language = current === 'es' ? 'en' : 'es';
+    updateLang(nextLang);
+  });
+
+  // 3. CARRITO Y MENÚ (Sin cambios, solo lógica funcional)
+  cartBtn?.addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('toggleCart'));
+  });
+
+  cartItems.subscribe(items => {
+    if (cartCount) {
+      items.length > 0 ? cartCount.classList.remove('hidden') : cartCount.classList.add('hidden');
+    }
+  });
 
   const toggleMenu = () => {
     isMenuOpen = !isMenuOpen;
@@ -101,7 +167,7 @@ const navI18n = {
       mobileMenu?.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
       iconOpen?.classList.add('opacity-0', 'scale-0');
       iconClose?.classList.add('opacity-100', 'scale-100', 'rotate-0');
-      gsap.fromTo(".mobile-link", { opacity: 0, y: 10 }, { opacity: 1, y: 0, stagger: 0.05, duration: 0.3, ease: "power2.out", clearProps: "all" });
+      gsap.fromTo(".mobile-link", { opacity: 0, y: 10 }, { opacity: 1, y: 0, stagger: 0.05, duration: 0.3, ease: "power2.out" });
     } else {
       mobileMenu?.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
       mobileMenu?.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
@@ -112,23 +178,11 @@ const navI18n = {
 
   menuToggle?.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
 
-  const updateLang = (lang: 'es' | 'en') => {
-    if (langLabel) langLabel.innerText = lang.toUpperCase();
-    document.querySelectorAll('[data-index]').forEach(el => {
-      const idx = parseInt(el.getAttribute('data-index') || '0');
-      const textSpan = el.querySelector('.nav-text-content') || el.querySelector('.mobile-text-content');
-      if (textSpan) textSpan.textContent = translations[lang][idx];
-    });
-    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
-  };
+  // Inicialización
+  const savedLang = (localStorage.getItem('selected-lang') as Language) || 'es';
+  updateLang(savedLang);
 
-  langSwitch?.addEventListener('click', () => {
-    const currentLang = (localStorage.getItem('selected-lang') as 'es' | 'en') || 'es';
-    const nextLang = currentLang === 'es' ? 'en' : 'es';
-    localStorage.setItem('selected-lang', nextLang);
-    updateLang(nextLang);
-  });
-
+  // TEMA
   const applyTheme = (theme: string) => {
     const isDark = theme === 'dark';
     document.documentElement.setAttribute('data-theme', theme);
@@ -143,24 +197,5 @@ const navI18n = {
     applyTheme(next);
   }));
 
-  const savedTheme = localStorage.getItem('theme') || 'dark';
-  const savedLang = (localStorage.getItem('selected-lang') as 'es' | 'en') || 'es';
-  applyTheme(savedTheme);
-  updateLang(savedLang);
-
-  document.addEventListener('click', (e) => {
-    if (isMenuOpen && !mobileMenu?.contains(e.target as Node) && !menuToggle?.contains(e.target as Node)) {
-      toggleMenu();
-    }
-  });
+  applyTheme(localStorage.getItem('theme') || 'dark');
 </script>
-
-<style>
-  @reference "../../styles/global.css";
-  :root { --mobile-card-bg: #ffffff; --option-item-bg: #f5f5f5; --header-rgb: 255 255 255; }
-  :root[data-theme="dark"] { --header-rgb: 10 10 10; --mobile-card-bg: #0d0d0d; --option-item-bg: #1a1a1a; }
-  .bg-header-bg { background-color: rgb(var(--header-rgb) / 0.7); }
-  .bg-mobile-card { background-color: var(--mobile-card-bg) !important; height: auto !important; }
-  .bg-option-bg { background-color: var(--option-item-bg) !important; opacity: 1 !important; }
-  #main-header { overflow: visible !important; }
-</style>

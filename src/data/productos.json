@@ -3,7 +3,7 @@
     "id": "00003",
     "nombre": "Foto Polaroid x 3",
     "precio": 1.50,
-    "imagen": "/images/products/polaroid3.jpeg",
+    "imagen": "/images/fotografia/polaroid3.jpeg",
     "categoria": "Fotografía",
     "descripcion": "Pack de 3 fotos estilo vintage."
   },
@@ -11,7 +11,7 @@
     "id": "00004",
     "nombre": "Foto Polaroid x 6",
     "precio": 2.50,
-    "imagen": "/images/products/polaroid6.jpeg",
+    "imagen": "/images/fotografia/polaroid6.jpeg",
     "categoria": "Fotografía",
     "descripcion": "Pack de 6 fotos estilo vintage."
   },
@@ -19,7 +19,7 @@
     "id": "00005",
     "nombre": "Fotos Polaroid x 9",
     "precio": 4.00,
-    "imagen": "/images/products/polaroid9.jpeg",
+    "imagen": "/images/fotografia/polaroid9.jpeg",
     "categoria": "Fotografía",
     "descripcion": "Pack de 9 fotos estilo vintage."
   },
@@ -27,7 +27,7 @@
     "id": "00006",
     "nombre": "Tira de Fotos x 2",
     "precio": 5.00,
-    "imagen": "/images/products/tiras.jpeg",
+    "imagen": "/images/fotografia/tiras.jpeg",
     "categoria": "Fotografía",
     "descripcion": "Tiras de fotos personalizadas."
   },
@@ -35,7 +35,7 @@
     "id": "00001",
     "nombre": "Taza Blanca Estampada",
     "precio": 5.00,
-    "imagen": "/images/products/tazablanca.jpeg",
+    "imagen": "/images/rigidos/tazablanca.jpeg",
     "categoria": "Tazas",
     "descripcion": "Cerámica de alta calidad."
   },
@@ -43,7 +43,7 @@
     "id": "00002",
     "nombre": "Tazas Mágicas Negras Estampada",
     "precio": 8.00,
-    "imagen": "/images/products/tazamagica.jpeg",
+    "imagen": "/images/rigidos/tazamagica.jpeg",
     "categoria": "Tazas",
     "descripcion": "Revela el diseño con calor."
   },
@@ -51,7 +51,7 @@
     "id": "00008",
     "nombre": "Franela Microdurazno Estampada",
     "precio": 13.00,
-    "imagen": "/images/products/microdurazno.jpeg",
+    "imagen": "/images/textil/microdurazno.jpeg",
     "categoria": "Textil",
     "descripcion": "Tela suave y fresca."
   },
@@ -59,7 +59,7 @@
     "id": "00012",
     "nombre": "Franela Algodón Básica Estampada",
     "precio": 18.00,
-    "imagen": "/images/products/algodon.jpeg",
+    "imagen": "/images/textil/algodon.jpeg",
     "categoria": "Textil",
     "descripcion": "100% algodón premium."
   },
@@ -67,7 +67,7 @@
     "id": "00007",
     "nombre": "Franela Oversize Estampada",
     "precio": 26.00,
-    "imagen": "/images/products/oversize.jpeg",
+    "imagen": "/images/textil/oversize.jpeg",
     "categoria": "Textil",
     "descripcion": "Corte moderno y amplio."
   },
@@ -75,7 +75,7 @@
     "id": "00013",
     "nombre": "Oversize Estampada (Mayor a 3 piezas)",
     "precio": 23.00,
-    "imagen": "/images/products/oversize_mayor.jpeg",
+    "imagen": "/images/textil/oversize_mayor.jpeg",
     "categoria": "Textil",
     "descripcion": "Precio especial al mayor."
   },
@@ -83,7 +83,7 @@
     "id": "00009",
     "nombre": "Estampado DFT Tipo Carta",
     "precio": 5.00,
-    "imagen": "/images/products/dft_carta.jpeg",
+    "imagen": "/images/textil/dft_carta.jpeg",
     "categoria": "Servicios",
     "descripcion": "Impresión lista para aplicar."
   },
@@ -91,7 +91,7 @@
     "id": "00010",
     "nombre": "Estampado DFT Tabloide",
     "precio": 8.00,
-    "imagen": "/images/products/dft_tabloide.jpeg",
+    "imagen": "/images/textil/dft_tabloide.jpeg",
     "categoria": "Servicios",
     "descripcion": "Máximo tamaño y detalle."
   },
@@ -99,7 +99,7 @@
     "id": "00014",
     "nombre": "Marcapáginas Personalizado",
     "precio": 2.00,
-    "imagen": "/images/products/marcapaginas.jpeg",
+    "imagen": "/images/fotografia/marcapaginas.jpeg",
     "categoria": "Papelería",
     "descripcion": "Plastificado y resistente."
   },
@@ -107,16 +107,16 @@
     "id": "00016",
     "nombre": "POSTER EN PAPEL FOTOGRAFICO A4 X 3",
     "precio": 2.50,
-    "imagen": "/images/products/poster.jpeg",
+    "imagen": "/images/marketing/poster.jpeg",
     "categoria": "Papelería",
     "descripcion": "Impresión de alta resolución."
   },
   {
     "id": "00017",
-    "nombre": "LMINA DE ALUMINIO SUBLIMADA A4",
-    "precio": 10,
-    "imagen": "/images/products/lamina.jpeg",
+    "nombre": "LAMINA DE ALUMINIO SUBLIMADA A4",
+    "precio": 10.00,
+    "imagen": "/images/rigidos/lamina.jpeg",
     "categoria": "Papelería",
-    "descripcion": "Impresión de alta resolución."
+    "descripcion": "Impresión de alta resolución sobre metal."
   }
 ]

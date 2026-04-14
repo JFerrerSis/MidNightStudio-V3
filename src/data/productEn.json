@@ -1,0 +1,122 @@
+[
+  {
+    "id": "00003",
+    "nombre": "Polaroid Photo x 3",
+    "precio": 1.50,
+    "imagen": "/images/fotografia/polaroid3.jpeg",
+    "categoria": "Photography",
+    "descripcion": "Vintage style pack of 3 photos."
+  },
+  {
+    "id": "00004",
+    "nombre": "Polaroid Photo x 6",
+    "precio": 2.50,
+    "imagen": "/images/fotografia/polaroid6.jpeg",
+    "categoria": "Photography",
+    "descripcion": "Vintage style pack of 6 photos."
+  },
+  {
+    "id": "00005",
+    "nombre": "Polaroid Photos x 9",
+    "precio": 4.00,
+    "imagen": "/images/fotografia/polaroid9.jpeg",
+    "categoria": "Photography",
+    "descripcion": "Vintage style pack of 9 photos."
+  },
+  {
+    "id": "00006",
+    "nombre": "Photo Strip x 2",
+    "precio": 5.00,
+    "imagen": "/images/fotografia/tiras.jpeg",
+    "categoria": "Photography",
+    "descripcion": "Customized photo strips."
+  },
+  {
+    "id": "00001",
+    "nombre": "Printed White Mug",
+    "precio": 5.00,
+    "imagen": "/images/rigidos/tazablanca.jpeg",
+    "categoria": "Mugs",
+    "descripcion": "High-quality ceramic."
+  },
+  {
+    "id": "00002",
+    "nombre": "Printed Black Magic Mugs",
+    "precio": 8.00,
+    "imagen": "/images/rigidos/tazamagica.jpeg",
+    "categoria": "Mugs",
+    "descripcion": "Reveals design with heat."
+  },
+  {
+    "id": "00008",
+    "nombre": "Printed Micro-peach T-Shirt",
+    "precio": 13.00,
+    "imagen": "/images/textil/microdurazno.jpeg",
+    "categoria": "Apparel",
+    "descripcion": "Soft and cool fabric."
+  },
+  {
+    "id": "00012",
+    "nombre": "Basic Printed Cotton T-Shirt",
+    "precio": 18.00,
+    "imagen": "/images/textil/algodon.jpeg",
+    "categoria": "Apparel",
+    "descripcion": "100% premium cotton."
+  },
+  {
+    "id": "00007",
+    "nombre": "Printed Oversize T-Shirt",
+    "precio": 26.00,
+    "imagen": "/images/textil/oversize.jpeg",
+    "categoria": "Apparel",
+    "descripcion": "Modern and loose fit."
+  },
+  {
+    "id": "00013",
+    "nombre": "Printed Oversize (Wholesale 3+ items)",
+    "precio": 23.00,
+    "imagen": "/images/textil/oversize_mayor.jpeg",
+    "categoria": "Apparel",
+    "descripcion": "Special wholesale pricing."
+  },
+  {
+    "id": "00009",
+    "nombre": "DTF Letter-size Print",
+    "precio": 5.00,
+    "imagen": "/images/textil/dft_carta.jpeg",
+    "categoria": "Services",
+    "descripcion": "Print ready to be applied."
+  },
+  {
+    "id": "00010",
+    "nombre": "DTF Tabloid-size Print",
+    "precio": 8.00,
+    "imagen": "/images/textil/dft_tabloide.jpeg",
+    "categoria": "Services",
+    "descripcion": "Maximum size and detail."
+  },
+  {
+    "id": "00014",
+    "nombre": "Customized Bookmark",
+    "precio": 2.00,
+    "imagen": "/images/fotografia/marcapaginas.jpeg",
+    "categoria": "Stationery",
+    "descripcion": "Laminated and durable."
+  },
+  {
+    "id": "00016",
+    "nombre": "A4 PHOTO PAPER POSTER X 3",
+    "precio": 2.50,
+    "imagen": "/images/marketing/poster.jpeg",
+    "categoria": "Stationery",
+    "descripcion": "High-resolution printing."
+  },
+  {
+    "id": "00017",
+    "nombre": "SUBLIMATED A4 ALUMINUM SHEET",
+    "precio": 10.00,
+    "imagen": "/images/rigidos/lamina.jpeg",
+    "categoria": "Stationery",
+    "descripcion": "High-resolution printing on metal."
+  }
+]

@@ -15,11 +15,10 @@ const services = [
   <div class="max-w-6xl mx-auto">
     
     <div class="text-center mb-12 space-y-3 reveal-header">
-
-      <h3 class="text-2xl sm:text-5xl font-bold text-main-text tracking-tight">
-        Servicios de <span class="text-transparent bg-clip-text bg-linear-to-r from-main-text to-cyan-500/50">Personalización</span>
-      </h3>
-    </div>
+  <h3 class="text-2xl sm:text-5xl font-bold text-main-text tracking-tight" data-i18n="services.mainTitle">
+    Servicios de <span class="text-transparent bg-clip-text bg-linear-to-r from-main-text to-cyan-500/50">Personalización</span>
+  </h3>
+</div>
 
     <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
       {services.map((service) => (
@@ -53,11 +52,14 @@ const services = [
 <script>
   import gsap from 'gsap';
   import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { currentLang, translations as storeTranslations, type Language } from '../../store/langStore';
 
   gsap.registerPlugin(ScrollTrigger);
 
-  const translations = {
+  // Diccionario local para los servicios
+  const serviceTranslations = {
     es: {
+      mainTitle: "Servicios de Personalización",
       titles: ["Textil & Estampado", "Mugs & Tazas", "Diseño Gráfico", "Fotos Polaroid", "Láminas de Aluminio", "Papelería Creativa"],
       descs: [
         "Sublimación y DFT de alta definición en franelas y prendas.",
@@ -69,6 +71,7 @@ const services = [
       ]
     },
     en: {
+      mainTitle: "Customization Services",
       titles: ["Textiles & Printing", "Mugs & Cups", "Graphic Design", "Polaroid Photos", "Aluminum Sheets", "Creative Stationery"],
       descs: [
         "High-definition sublimation and DFT on various garments.",
@@ -81,19 +84,28 @@ const services = [
     }
   };
 
-  const updateContent = () => {
-    const lang = (localStorage.getItem('selected-lang') as 'es' | 'en') || 'es';
+  const updateContent = (lang: Language) => {
+    // 1. Traducir el Título Principal
+    const mainTitle = document.querySelector('[data-i18n="services.mainTitle"]');
+    if (mainTitle) {
+      const text = serviceTranslations[lang].mainTitle;
+      // Para mantener el efecto degradado en la última palabra
+      const words = text.split(' ');
+      const lastWord = words.pop();
+      mainTitle.innerHTML = `${words.join(' ')} <span class="text-transparent bg-clip-text bg-linear-to-r from-main-text to-cyan-500/50">${lastWord}</span>`;
+    }
+
+    // 2. Traducir las Cards
     document.querySelectorAll('[data-service-index]').forEach(el => {
       const idx = parseInt(el.getAttribute('data-service-index') || '0');
       const title = el.querySelector('.service-title');
       const desc = el.querySelector('.service-desc');
-      if (title) title.textContent = translations[lang].titles[idx];
-      if (desc) desc.textContent = translations[lang].descs[idx];
+      if (title) title.textContent = serviceTranslations[lang].titles[idx];
+      if (desc) desc.textContent = serviceTranslations[lang].descs[idx];
     });
   };
 
   const initAnimations = () => {
-    // Reset para evitar saltos visuales
     gsap.set(".service-card", { y: 40, opacity: 0 });
     gsap.set(".reveal-header", { y: 20, opacity: 0 });
 
@@ -116,16 +128,15 @@ const services = [
       }, "-=0.4");
   };
 
-  window.addEventListener('languageChanged', (e: any) => updateContent());
+  // Escuchar el Store de Nanostores para cambio de idioma
+  currentLang.subscribe((lang) => {
+    updateContent(lang);
+  });
   
   document.addEventListener('astro:page-load', () => {
-    updateContent();
+    updateContent(currentLang.get());
     initAnimations();
   });
-
-  // Ejecución inicial
-  updateContent();
-  initAnimations();
 </script>
 
 <style>

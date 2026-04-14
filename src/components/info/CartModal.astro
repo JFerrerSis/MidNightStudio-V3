@@ -1,134 +1,280 @@
 ---
-import { X, Trash2, Send, ShoppingCart } from '@lucide/astro';
+// src/components/info/CartModal.astro
+import { X, Send, ShoppingCart, Trash2, Package, CreditCard, MapPin, User, Calendar } from '@lucide/astro';
+import productosEs from "../../data/productos.json";
+import productosEn from "../../data/productEn.json";
+
+const whatsappNumber = import.meta.env.PUBLIC_WHATSAPP_NUMBER;
+
+const allData = {
+  es: productosEs,
+  en: productosEn
+};
 ---
 
-<div id="cart-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-100 hidden opacity-0 transition-all duration-500">
-  <div id="cart-panel" class="absolute right-0 top-0 h-full w-full max-w-lg bg-card-bg border-l border-white/10 p-8 flex flex-col translate-x-full transition-transform duration-500 ease-out">
+<div id="cart-overlay" data-all-products={JSON.stringify(allData)} class="fixed inset-0 bg-[#050505] z-500 hidden opacity-0 transition-all duration-500 overflow-y-auto overflow-x-hidden py-4 sm:py-10 px-4">
+  
+  <div id="cart-panel" class="relative mx-auto w-full max-w-5xl bg-modal-bg rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] translate-y-10 transition-transform duration-500 ease-out">
     
-    <div class="flex justify-between items-center mb-8">
-      <div class="flex items-center gap-3">
-        <ShoppingCart class="text-cyan-500 w-6 h-6" />
-        <h2 class="text-2xl font-bold text-main-text uppercase tracking-tighter italic">Tu Comanda</h2>
-      </div>
-      <button id="close-cart" class="p-2 hover:bg-white/5 rounded-full transition-colors">
-        <X class="text-main-text w-6 h-6" />
-      </button>
-    </div>
+    <button id="close-cart" class="absolute top-6 right-6 z-50 p-4 bg-main-text/5 hover:bg-main-text/10 rounded-full transition-all text-main-text active:scale-90 cursor-pointer">
+      <X class="w-6 h-6" />
+    </button>
 
-    <div id="cart-items-container" class="grow overflow-y-auto pr-2 space-y-4 mb-8 scrollbar-hide">
+    <div class="flex flex-col lg:flex-row min-h-150">
+      
+      <div class="lg:w-1/2 p-8 sm:p-12 border-b lg:border-b-0 lg:border-r border-default-border bg-modal-bg">
+        <header class="mb-10">
+          <div class="inline-flex p-3 bg-cyan-500 text-black rounded-2xl mb-4 shadow-lg shadow-cyan-500/20">
+            <User class="w-6 h-6" />
+          </div>
+          <h2 class="text-3xl font-black text-main-text uppercase tracking-tighter italic leading-none" data-i18n="cart.title">Finalizar Pedido</h2>
+          <p class="text-[10px] text-main-text/40 uppercase font-bold tracking-[0.3em] mt-2" data-i18n="cart.subtitle">Completa tus datos de envío</p>
+        </header>
+
+        <form id="whatsapp-form" class="space-y-6" data-wa={whatsappNumber}>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.name">Nombre</label>
+              <input type="text" id="client-name" placeholder="Ej. Alex" required 
+                class="w-full bg-main-text/5 border border-default-border p-4 rounded-2xl text-main-text outline-none focus:border-cyan-500 transition-all text-sm font-bold placeholder:text-main-text/20" />
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.id">Cédula</label>
+              <input type="number" id="client-id" placeholder="V-00000000" required 
+                class="w-full bg-main-text/5 border border-default-border p-4 rounded-2xl text-main-text outline-none focus:border-cyan-500 transition-all text-sm font-bold placeholder:text-main-text/20" />
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.phone">WhatsApp</label>
+            <input type="tel" id="client-phone" placeholder="+58 412..." required 
+              class="w-full bg-main-text/5 border border-default-border p-4 rounded-2xl text-main-text outline-none focus:border-cyan-500 transition-all text-sm font-bold placeholder:text-main-text/20" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.method">Método</label>
+              <select id="order-method" class="w-full bg-main-text/5 border border-default-border p-4 rounded-2xl text-main-text text-xs font-black outline-none focus:border-cyan-500 cursor-pointer appearance-none uppercase">
+                <option value="Pickup" class="bg-modal-bg">🏪 Pickup</option>
+                <option value="Delivery" class="bg-modal-bg">🚀 Delivery</option>
+              </select>
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.date">Fecha</label>
+              <input type="date" id="order-date" required 
+                class="w-full bg-main-text/5 border border-default-border p-4 rounded-2xl text-main-text text-sm font-bold outline-none focus:border-cyan-500" />
+            </div>
+          </div>
+
+          <div id="address-wrapper" class="hidden space-y-2">
+            <label class="text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.address">Dirección</label>
+            <textarea id="order-address" placeholder="..." 
+              class="w-full bg-main-text/5 border border-default-border p-4 rounded-2xl text-main-text outline-none focus:border-cyan-500 text-sm font-medium resize-none h-24 placeholder:text-main-text/20"></textarea>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.payment">Pago</label>
+            <select id="order-payment" class="w-full bg-main-text/5 border border-default-border p-4 rounded-2xl text-main-text text-xs font-black outline-none focus:border-cyan-500 cursor-pointer appearance-none uppercase">
+              <option value="Pago Móvil" class="bg-modal-bg">💸 Pago Móvil</option>
+              <option value="Zelle" class="bg-modal-bg">💵 Zelle</option>
+              <option value="Efectivo" class="bg-modal-bg">💰 Efectivo</option>
+            </select>
+          </div>
+        </form>
       </div>
 
-    <div class="border-t border-white/10 pt-6 space-y-6">
-      <div class="flex justify-between items-end">
-        <span class="text-main-text/40 text-xs uppercase font-black tracking-widest">Total a pagar</span>
-        <span id="cart-total-price" class="text-4xl font-black text-cyan-500 tracking-tighter">$0.00</span>
-      </div>
+      <div class="lg:w-1/2 p-8 sm:p-12 bg-main-text/2 flex flex-col">
+        <header class="mb-10">
+          <div class="flex items-center gap-3 text-main-text">
+             <Package class="text-cyan-500 w-5 h-5" />
+             <h3 class="text-xl font-black uppercase tracking-tight italic" data-i18n="cart.summary">Resumen</h3>
+          </div>
+          <div class="h-1 w-12 bg-cyan-500 mt-2"></div>
+        </header>
 
-      <form id="whatsapp-form" class="space-y-3">
-        <input type="text" id="client-name" placeholder="Nombre y Apellido" required 
-          class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-main-text outline-none focus:border-cyan-500 transition-colors text-sm" />
-        
-        <div class="grid grid-cols-2 gap-3">
-          <select id="order-method" class="bg-white/5 border border-white/10 p-4 rounded-2xl text-main-text text-xs outline-none focus:border-cyan-500">
-            <option value="Delivery">🚀 Delivery</option>
-            <option value="Pickup">🏪 Pickup en Tienda</option>
-          </select>
-          <input type="date" id="order-date" required class="bg-white/5 border border-white/10 p-4 rounded-2xl text-main-text text-xs outline-none focus:border-cyan-500" />
+        <div id="cart-items-container" class="grow space-y-4 max-h-125 lg:max-h-125 overflow-y-auto pr-2 custom-scrollbar"></div>
+
+        <div class="mt-8 pt-8 border-t border-default-border">
+          <div class="flex justify-between items-center mb-8">
+            <span class="text-xs uppercase font-black text-main-text/30 tracking-widest" data-i18n="cart.total">Total</span>
+            <span id="cart-total-price" class="text-4xl font-black text-cyan-500 tracking-tighter">$0.00</span>
+          </div>
+
+          <button type="submit" form="whatsapp-form" class="w-full bg-cyan-500 hover:bg-main-text hover:text-card-bg text-black font-black py-6 rounded-3xl flex items-center justify-center gap-4 transition-all active:scale-[0.98] shadow-2xl shadow-cyan-500/20 uppercase tracking-[0.2em] text-xs cursor-pointer">
+            <Send class="w-5 h-5" />
+            <span data-i18n="cart.send">Confirmar</span>
+          </button>
         </div>
-
-        <select id="order-payment" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-main-text text-xs outline-none focus:border-cyan-500">
-          <option value="Pago Móvil">💸 Pago Móvil</option>
-          <option value="Zelle">💵 Zelle</option>
-          <option value="Efectivo">💰 Efectivo</option>
-        </select>
-
-        <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-white font-black py-5 rounded-4xl flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg shadow-cyan-500/20 uppercase tracking-widest text-xs">
-          <Send class="w-4 h-4" />
-          Enviar Pedido a WhatsApp
-        </button>
-      </form>
+      </div>
     </div>
   </div>
 </div>
 
+<style>
+  :root {
+    --modal-bg: #ffffff;
+    --default-border: #f0f0f0;
+    --main-text-color: #000000;
+  }
+
+  :root[data-theme="dark"], .dark {
+    --modal-bg: #0e0e0e;
+    --default-border: #1a1a1a;
+    --main-text-color: #ffffff;
+  }
+
+  .bg-modal-bg { background-color: var(--modal-bg); }
+  .border-default-border { border-color: var(--default-border); }
+  .text-main-text { color: var(--main-text-color); }
+
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  
+  #cart-panel {
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: var(--calendar-filter);
+    cursor: pointer;
+  }
+  :root { --calendar-filter: invert(0); }
+  :root[data-theme="dark"] { --calendar-filter: invert(1); }
+</style>
+
 <script>
-  // IMPORTANTE: Asegúrate de que en cartStore.ts el tipo de ID sea 'string | number' 
-  // o simplemente 'string' para coincidir con tu JSON.
   import { cartItems, removeFromCart, cartTotal } from '../../store/cartStore';
+  import { currentLang, translations, type Language } from '../../store/langStore';
 
   const overlay = document.getElementById('cart-overlay');
   const panel = document.getElementById('cart-panel');
-  const container = document.getElementById('cart-items-container');
-  const totalDisplay = document.getElementById('cart-total-price');
   const form = document.getElementById('whatsapp-form') as HTMLFormElement;
+  const methodSelect = document.getElementById('order-method') as HTMLSelectElement;
+  const addressWrapper = document.getElementById('address-wrapper');
+  const addressField = document.getElementById('order-address') as HTMLTextAreaElement;
+  
+  // Datos de productos bilingües
+  const allProductsData = JSON.parse(overlay?.dataset.allProducts || '{}');
 
-  cartItems.subscribe(items => {
+  // --- 1. RENDERIZADO BILINGÜE DEL CARRITO ---
+  const renderCart = () => {
+    const items = cartItems.get();
+    const lang = currentLang.get();
+    const container = document.getElementById('cart-items-container');
+    const totalDisplay = document.getElementById('cart-total-price');
     if (!container || !totalDisplay) return;
-    
+
     if (items.length === 0) {
-      container.innerHTML = `<div class="h-40 flex items-center justify-center text-main-text/20 uppercase font-black text-xs tracking-widest text-center">Tu carrito está vacío</div>`;
+      const emptyText = lang === 'es' ? 'Vacío' : 'Empty';
+      container.innerHTML = `
+        <div class="h-60 flex flex-col items-center justify-center opacity-10">
+          <svg class="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p class="font-black uppercase tracking-widest text-xs">${emptyText}</p>
+        </div>`;
     } else {
-      container.innerHTML = items.map(item => `
-        <div class="flex items-center gap-4 bg-white/[0.02] p-4 rounded-4xl border border-white/5">
-          <img src="${item.img}" class="w-16 h-16 object-cover rounded-2xl" />
-          <div class="grow">
-            <h4 class="text-[10px] font-bold text-main-text uppercase tracking-tight">${item.name}</h4>
-            <p class="text-cyan-500 font-black text-sm">${item.quantity}x $${item.price.toFixed(2)}</p>
+      container.innerHTML = items.map(item => {
+        // Buscamos el nombre en el JSON del idioma actual
+        const info = allProductsData[lang]?.find((p: any) => p.id === item.id);
+        const displayName = info ? info.nombre : item.name;
+
+        return `
+          <div class="flex items-center gap-5 p-5 bg-main-text/[0.03] border border-default-border rounded-[2rem] group transition-all hover:border-cyan-500/30">
+            <img src="${item.img}" class="w-20 h-20 object-cover rounded-2xl shadow-xl" />
+            <div class="grow">
+              <h4 class="text-xs font-black text-main-text uppercase tracking-tight">${displayName}</h4>
+              <p class="text-cyan-500 font-black text-sm mt-1">$${item.price.toFixed(2)} <span class="text-main-text/20 ml-2 font-normal">x${item.quantity}</span></p>
+            </div>
+            <button onclick="window.deleteItem('${item.id}')" class="p-3 text-main-text/10 hover:text-red-500 transition-all cursor-pointer">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
           </div>
-          <button onclick="window.deleteItem('${item.id}')" class="p-3 text-white/10 hover:text-red-500 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-          </button>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
     totalDisplay.textContent = `$${cartTotal.get().toFixed(2)}`;
-  });
-
-  // SOLUCIÓN AL ERROR DE TIPOS: Pasamos el ID como string
-  (window as any).deleteItem = (id: string) => {
-    // Si tu store espera número, usa parseInt(id). Si tu JSON es string, déjalo así.
-    removeFromCart(id as any); 
   };
 
-  window.addEventListener('toggleCart', () => {
-    const isHidden = overlay?.classList.contains('hidden');
-    if (isHidden) {
+  // --- 2. SUBSCRIPCIONES ---
+  cartItems.subscribe(() => renderCart());
+
+  currentLang.subscribe((lang: Language) => {
+    // Traducir etiquetas data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (!key) return;
+      const keys = key.split('.');
+      let translation: any = translations[lang];
+      keys.forEach(k => { translation = translation?.[k]; });
+      if (translation) el.textContent = translation;
+    });
+    // Actualizar nombres de productos
+    renderCart();
+  });
+
+  // --- 3. CONTROL DE MODAL ---
+  const toggleCart = (show: boolean) => {
+    if (show) {
       overlay?.classList.remove('hidden');
       setTimeout(() => {
-        overlay?.classList.remove('opacity-0');
-        panel?.classList.remove('translate-x-full');
+        overlay?.classList.add('opacity-100');
+        panel?.classList.remove('translate-y-10');
       }, 10);
+      document.body.style.overflow = 'hidden';
     } else {
-      overlay?.classList.add('opacity-0');
-      panel?.classList.add('translate-x-full');
+      overlay?.classList.remove('opacity-100');
+      panel?.classList.add('translate-y-10');
+      document.body.style.overflow = '';
       setTimeout(() => overlay?.classList.add('hidden'), 500);
     }
+  };
+
+  window.addEventListener('toggleCart', () => toggleCart(true));
+  document.getElementById('close-cart')?.addEventListener('click', () => toggleCart(false));
+  overlay?.addEventListener('click', (e) => { if(e.target === overlay) toggleCart(false); });
+
+  methodSelect?.addEventListener('change', () => {
+    const isDelivery = methodSelect.value === 'Delivery';
+    addressWrapper?.classList.toggle('hidden', !isDelivery);
+    addressField.required = isDelivery;
   });
 
-  document.getElementById('close-cart')?.addEventListener('click', () => window.dispatchEvent(new CustomEvent('toggleCart')));
-
+  // --- 4. ENVÍO WHATSAPP ---
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
+    const lang = currentLang.get();
+    const items = cartItems.get();
+    if (items.length === 0) return alert(lang === 'es' ? "Agrega productos primero" : "Add products first");
+
     const data = {
       name: (document.getElementById('client-name') as HTMLInputElement).value,
-      method: (document.getElementById('order-method') as HTMLSelectElement).value,
+      id: (document.getElementById('client-id') as HTMLInputElement).value,
+      phone: (document.getElementById('client-phone') as HTMLInputElement).value,
+      method: methodSelect.value,
       date: (document.getElementById('order-date') as HTMLInputElement).value,
       payment: (document.getElementById('order-payment') as HTMLSelectElement).value,
+      address: addressField.value
     };
 
-    let msg = `*MIDNIGHT STUDIO - PEDIDO*\n\n`;
-    msg += `👤 *Cliente:* ${data.name}\n`;
-    msg += `📍 *Entrega:* ${data.method}\n`;
-    msg += `📅 *Fecha:* ${data.date}\n`;
-    msg += `💳 *Pago:* ${data.payment}\n\n`;
-    msg += `📦 *Detalle:*\n`;
+    const t = translations[lang].cart;
+    const headerTitle = lang === 'es' ? 'PEDIDO' : 'ORDER';
     
-    cartItems.get().forEach(item => {
-      msg += `- ${item.quantity}x ${item.name} ($${(item.price * item.quantity).toFixed(2)})\n`;
+    let msg = `*✨ MIDNIGHT STUDIO - ${headerTitle} ✨*\n\n`;
+    msg += `👤 *${t.name}:* ${data.name} (${data.id})\n`;
+    msg += `📞 *WhatsApp:* ${data.phone}\n`;
+    msg += `📅 *${t.date}:* ${data.date}\n`;
+    msg += `📍 *${t.method}:* ${data.method}\n`;
+    if(data.method === 'Delivery') msg += `🏠 *${t.address}:* ${data.address}\n`;
+    msg += `💳 *${t.payment}:* ${data.payment}\n\n`;
+    msg += `📦 *${lang === 'es' ? 'PRODUCTOS' : 'PRODUCTS'}:*\n`;
+    
+    items.forEach(i => {
+      const info = allProductsData[lang]?.find((p: any) => p.id === i.id);
+      const name = info ? info.nombre : i.name;
+      msg += `• ${i.quantity}x ${name} ($${(i.price * i.quantity).toFixed(2)})\n`;
     });
+    msg += `\n💰 *TOTAL: $${cartTotal.get().toFixed(2)}*`;
 
-    msg += `\n💰 *TOTAL A PAGAR: $${cartTotal.get().toFixed(2)}*`;
-    
-    window.open(`https://wa.me/584120000000?text=${encodeURIComponent(msg)}`, '_blank');
+    window.open(`https://wa.me/${form.dataset.wa}?text=${encodeURIComponent(msg)}`, '_blank');
   });
+
+  (window as any).deleteItem = (id: string) => removeFromCart(id);
 </script>

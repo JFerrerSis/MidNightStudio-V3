@@ -9,7 +9,7 @@ import CartModal from "../components/info/CartModal.astro";
   <Header />
   
   <main class="min-h-screen bg-main-bg pt-24">
-    <div id="catalog-page-wrapper" class="opacity-0 translate-y-4 transition-all duration-700 ease-out">
+    <div id="catalog-page-wrapper">
       <CatalogComponent />
     </div>
   </main>
@@ -18,18 +18,31 @@ import CartModal from "../components/info/CartModal.astro";
 </Layout>
 
 <script>
-  // Animación de entrada al cargar la página
-  document.addEventListener('astro:page-load', () => {
+  import gsap from 'gsap';
+
+  function initEntrance() {
     const wrapper = document.getElementById('catalog-page-wrapper');
     if (wrapper) {
-      wrapper.classList.remove('opacity-0', 'translate-y-4');
+      // Seteamos el estado inicial con GSAP y luego animamos
+      gsap.fromTo(wrapper, 
+        { 
+          opacity: 0, 
+          y: 30 
+        }, 
+        { 
+          opacity: 1, 
+          y: 0, 
+          duration: 1, 
+          ease: "expo.out",
+          delay: 0.2 // Un pequeño respiro para que cargue el DOM
+        }
+      );
     }
-  });
-</script>
-
-<style>
-  /* Forzamos que el fondo sea consistente para la vista completa */
-  body {
-    background-color: var(--main-bg);
   }
-</style>
+
+  // Ejecución estándar
+  window.addEventListener('load', initEntrance);
+  
+  // Soporte por si usas ViewTransitions
+  document.addEventListener('astro:page-load', initEntrance);
+</script>
