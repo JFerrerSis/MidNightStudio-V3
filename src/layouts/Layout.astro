@@ -12,41 +12,70 @@ import '../styles/global.css';
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="icon" type="image/svg+xml" href="/logodark.png" />
         
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
         
         <title>{title}</title>
     </head>
-    <body class="bg-white text-midnight-text antialiased">
+    <body class="bg-main-bg text-main-text antialiased transition-colors duration-500">
         <slot />
 
         <style is:global>
-            /* Reset y utilidades básicas para animaciones fluidas */
+            /* CONFIGURACIÓN PRO: TEORÍA DEL COLOR PARA DEGRADADOS */
             :root {
-                --emerald: #10b981;
-                --midnight: #0f172a;
+                /* Gris Gélido / Off-White Azulado para que el cian NO se lave */
+                --main-bg: #cde0eb; 
+                --main-text: #050505;
+                --default-border: rgba(5, 5, 5, 0.1);
+                --accent-cyan: #06b6d4;
+                --accent-purple: #a855f7;
             }
+
+            :root[data-theme="dark"], .dark {
+                --main-bg: #050505;
+                --main-text: #ffffff;
+                --default-border: rgba(255, 255, 255, 0.1);
+            }
+
+            /* Aplicación de variables */
+            .bg-main-bg { background-color: var(--main-bg); }
+            .text-main-text { color: var(--main-text); }
 
             body {
-                overflow-x: hidden; /* Evita scrolls horizontales raros por las animaciones */
+                overflow-x: hidden;
+                min-height: 100vh;
+                /* Fuente Inter para look técnico/studio */
+                font-family: 'Inter', sans-serif;
             }
 
-            /* Mejora la selección de texto con los colores de Midnight Studio */
+            /* Estilo de selección coherente */
             ::selection {
-                background-color: rgba(16, 185, 129, 0.2);
-                color: #0f172a;
+                background-color: var(--accent-cyan);
+                color: #000;
             }
 
-            /* Ocultar barra de scroll pero mantener funcionalidad (Opcional, muy pro) */
-            .no-scrollbar::-webkit-scrollbar {
-                display: none;
+            /* Scrollbar personalizada minimalista */
+            ::-webkit-scrollbar {
+                width: 6px;
             }
-            .no-scrollbar {
-                -ms-overflow-style: none;
-                scrollbar-width: none;
+            ::-webkit-scrollbar-track {
+                background: var(--main-bg);
+            }
+            ::-webkit-scrollbar-thumb {
+                background: var(--default-border);
+                border-radius: 10px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: var(--accent-cyan);
+            }
+
+            /* Utilidades para textos en cursiva (Midnight Style) */
+            .font-italic-bold {
+                font-family: 'Playfair Display', serif;
+                font-style: italic;
             }
         </style>
 
@@ -55,10 +84,24 @@ import '../styles/global.css';
             import { ScrollTrigger } from 'gsap/ScrollTrigger';
             gsap.registerPlugin(ScrollTrigger);
 
-            // Configuramos un suavizado global para los triggers si es necesario
+            // Evitar saltos visuales al recargar
             ScrollTrigger.config({
                 autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"
             });
+
+            // Lógica para persistencia de tema (Opcional pero recomendada)
+            const handleTheme = () => {
+                const theme = localStorage.getItem('theme') || 'dark';
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            }
+            
+            handleTheme();
+            document.addEventListener('astro:after-swap', handleTheme);
         </script>
     </body>
 </html>

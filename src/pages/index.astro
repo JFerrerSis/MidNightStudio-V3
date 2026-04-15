@@ -2,86 +2,65 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/ui/Header.astro';
 import Footer from '../components/ui/Footer.astro';
-
 import Hero from '../components/info/Hero.astro';
 import Services from '../components/info/Services.astro';
-import About from '../components/info/About.astro'; // <-- Importar
+import About from '../components/info/About.astro';
 import Gallery from '../components/info/Gallery.astro';
 import Contact from '../components/info/Contact.astro';
 ---
 
 <Layout title="Midnight Studio | Diseño y Producción Textil">
-	<Navbar />
+    <Navbar />
 
-	<main class="bg-main-bg transition-colors duration-500 overflow-x-hidden">
-		<section id="inicio"><Hero /></section>
+    <main>
+        <section id="inicio"><Hero /></section>
 
-		<div class="container mx-auto px-6">
-			<div class="h-px w-full bg-linear-to-r from-transparent via-main-text/5 to-transparent"></div>
-		</div>
+        <div class="container mx-auto px-6">
+            <div class="h-px w-full bg-linear-to-r from-transparent via-main-text/10 to-transparent opacity-50"></div>
+        </div>
 
-		<section id="servicios" class="relative z-10 py-20 lg:py-32"><Services /></section>
+        <section id="servicios" class="py-20 lg:py-32"><Services /></section>
 
-		<div class="container mx-auto px-6">
-			<div class="h-px w-full bg-linear-to-r from-transparent via-main-text/5 to-transparent"></div>
-		</div>
-		<section id="nosotros" class="relative z-10 py-20 lg:py-32">
-			<About />
-		</section>
+        <div class="container mx-auto px-6">
+            <div class="h-px w-full bg-linear-to-r from-transparent via-main-text/10 to-transparent opacity-50"></div>
+        </div>
 
-		<div class="container mx-auto px-6">
-			<div class="h-px w-full bg-linear-to-r from-transparent via-main-text/5 to-transparent"></div>
-		</div>
+        <section id="nosotros" class="py-20 lg:py-32"><About /></section>
 
-		<section id="galeria" class="relative z-10 py-20 lg:py-32"><Gallery /></section>
+        <div class="container mx-auto px-6">
+            <div class="h-px w-full bg-linear-to-r from-transparent via-main-text/10 to-transparent opacity-50"></div>
+        </div>
 
-		<div class="container mx-auto px-6">
-			<div class="h-px w-full bg-linear-to-r from-transparent via-main-text/5 to-transparent"></div>
-		</div>
+        <section id="galeria" class="py-20 lg:py-32"><Gallery /></section>
 
-		<section id="contacto" class="relative z-10 py-20 lg:py-40"><Contact /></section>
-	</main>
+        <div class="container mx-auto px-6">
+            <div class="h-px w-full bg-linear-to-r from-transparent via-main-text/10 to-transparent opacity-50"></div>
+        </div>
 
-	<Footer />
+        <section id="contacto" class="py-20 lg:py-40"><Contact /></section>
+    </main>
+
+    <Footer />
 </Layout>
 
 <script>
-	import gsap from 'gsap';
-	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+    import gsap from 'gsap';
+    import { ScrollTrigger } from 'gsap/ScrollTrigger';
+    gsap.registerPlugin(ScrollTrigger);
 
-	gsap.registerPlugin(ScrollTrigger);
-
-	const initApp = () => {
-		const sections = document.querySelectorAll('section');
-		sections.forEach(section => {
-			gsap.from(section, {
-				scrollTrigger: {
-					trigger: section,
-					start: "top 85%",
-					toggleActions: "play none none none"
-				},
-				opacity: 0,
-				y: 30,
-				duration: 1,
-				ease: "expo.out"
-			});
-		});
-	};
-
-	document.addEventListener('astro:page-load', initApp);
+    const initApp = () => {
+        gsap.utils.toArray('section').forEach((section: any) => {
+            gsap.from(section, {
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 85%",
+                },
+                opacity: 0,
+                y: 30,
+                duration: 1,
+                ease: "power3.out"
+            });
+        });
+    };
+    document.addEventListener('astro:page-load', initApp);
 </script>
-
-<style is:global>
-	:root {
-		scroll-behavior: smooth;
-	}
-
-	/* Evitamos que el scroll se pegue demasiado arriba por el Navbar */
-	section {
-		scroll-margin-top: 80px;
-	}
-
-	body {
-		background-color: #000; /* Asegura un fondo sólido entre secciones */
-	}
-</style>

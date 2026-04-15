@@ -6,9 +6,10 @@ import { ShoppingBag } from '@lucide/astro';
 <section id="hero" class="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-main-bg transition-colors duration-700">
   
   <div id="hero-bg" class="absolute inset-0 z-0 pointer-events-none">
-    <div class="absolute inset-0 bg-[linear-gradient(to_right,var(--color-main-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-main-border)_1px,transparent_1px)] bg-size-[5rem_5rem] mask-radial opacity-[0.1] dark:opacity-[0.15]"></div>
-    <div class="hero-orb absolute top-[-10%] left-[-10%] w-[70vw] h-[70vw] bg-cyan-500/20 dark:bg-cyan-500/10 rounded-full blur-[120px]"></div>
-    <div class="hero-orb absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-emerald-500/20 dark:bg-emerald-500/10 rounded-full blur-[100px]"></div>
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,var(--color-main-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-main-border)_1px,transparent_1px)] bg-size-[5rem_5rem] mask-radial opacity-[0.05] dark:opacity-[0.1]"></div>
+    
+    <div id="orb-cyan" class="hero-orb absolute top-[-15%] left-[-10%] w-[80vw] h-[80vw] bg-cyan-400/70 dark:bg-cyan-500/15 rounded-full blur-[110px]"></div>
+    <div id="orb-purple" class="hero-orb absolute bottom-[-10%] right-[-5%] w-[60vw] h-[60vw] bg-purple-500/60 dark:bg-purple-900/20 rounded-full blur-[120px]"></div>
   </div>
 
   <div class="container mx-auto px-6 z-10 max-w-7xl">
@@ -16,38 +17,38 @@ import { ShoppingBag } from '@lucide/astro';
       
       <div id="hero-content-left" class="flex flex-col items-center lg:items-start text-center lg:text-left order-2 lg:order-1">
         <div id="hero-brand-wrapper" class="mb-6 opacity-0 translate-y-4">
-          <div class="flex items-center gap-4">
-            <h2 class="text-[10px] font-black tracking-[0.8em] text-cyan-600 dark:text-cyan-400 uppercase">Midnight Studio</h2>
-            <span class="h-px w-16 bg-linear-to-r from-cyan-500/50 to-transparent"></span>
+          <div class="flex items-center gap-4 group cursor-default">
+            <h2 class="text-[10px] font-black tracking-[0.8em] text-cyan-600 dark:text-cyan-400 uppercase transition-all duration-500 group-hover:tracking-[1em]">Midnight Studio</h2>
+            <span class="h-px w-16 bg-linear-to-r from-cyan-500/50 to-transparent transition-all duration-500 group-hover:w-24"></span>
           </div>
         </div>
 
-        <h1 id="hero-title" class="text-[13vw] sm:text-7xl lg:text-7xl xl:text-8xl font-bold text-main-text leading-[1.1] tracking-tighter uppercase mb-8">
+        <h1 id="hero-title" class="text-[13vw] sm:text-7xl lg:text-7xl xl:text-8xl font-black text-main-text leading-[1.1] tracking-tighter uppercase mb-8 italic">
           <div class="overflow-hidden py-1"> 
             <span id="hero-t1" class="hero-anim-text inline-block translate-y-full opacity-0">Creamos</span>
           </div>
           <div class="overflow-hidden py-1 px-4 -ml-4"> 
-            <span id="hero-t2" class="hero-anim-text inline-block translate-y-full opacity-0 text-transparent bg-clip-text bg-linear-to-r from-cyan-600 via-emerald-500 to-cyan-500 dark:from-cyan-400 dark:via-emerald-400 dark:to-cyan-500 italic pr-4">
+            <span id="hero-t2" class="hero-anim-text inline-block translate-y-full opacity-0 text-transparent bg-clip-text bg-linear-to-r from-cyan-600 via-purple-500 to-cyan-500 dark:from-cyan-400 dark:via-purple-400 dark:to-cyan-500 italic pr-4 hover:brightness-125 transition-all duration-500">
               el Futuro
             </span>
           </div>
         </h1>
 
         <div id="hero-meta-wrapper" class="opacity-0 translate-y-6 flex flex-col items-center lg:items-start w-full">
-            <p id="hero-meta-text" class="text-main-text/60 dark:text-main-text/70 text-sm sm:text-base tracking-[0.15em] uppercase font-medium mb-10 max-w-md leading-relaxed">
-               </p>
+            <p id="hero-meta-text" class="text-main-text/70 dark:text-main-text/60 text-sm sm:text-base tracking-[0.15em] uppercase font-bold mb-10 max-w-md leading-relaxed italic"></p>
             
-            <div class="flex flex-col sm:flex-row gap-4 items-center">
-                <div class="relative group active:scale-95 transition-transform duration-200 w-full sm:w-auto">
-                    <a href="#contacto" class="relative px-10 py-4 bg-main-text text-main-bg rounded-full font-bold text-[10px] tracking-[0.3em] uppercase flex items-center justify-center gap-3 border border-main-text/10">
+            <div class="flex flex-col sm:flex-row gap-4 items-center w-full sm:w-auto">
+                <div class="relative group active:scale-95 transition-all duration-300 w-full sm:w-auto">
+                    <div class="absolute -inset-1 bg-linear-to-r from-cyan-500 to-purple-600 rounded-full blur opacity-0 group-hover:opacity-40 transition duration-500"></div>
+                    <a href="#contacto" class="relative px-10 py-4 bg-main-text text-main-bg rounded-full font-black text-[10px] tracking-[0.3em] uppercase flex items-center justify-center gap-3 border border-main-text/10">
                         <span id="hero-cta-text">Iniciar Proyecto</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                     </a>
                 </div>
 
-                <div class="relative group active:scale-95 transition-transform duration-200 w-full sm:w-auto">
-                    <a href="/catalogo" class="relative px-10 py-4 bg-main-text/5 hover:bg-main-text/10 text-main-text rounded-full font-bold text-[10px] tracking-[0.3em] uppercase flex items-center justify-center gap-3 border border-main-text/10 backdrop-blur-md">
-                        <ShoppingBag class="w-4 h-4 text-cyan-500" />
+                <div class="relative group active:scale-95 transition-all duration-300 w-full sm:w-auto">
+                    <a href="/catalogo" class="relative px-10 py-4 bg-white/40 dark:bg-white/5 hover:bg-white/60 dark:hover:bg-white/10 text-main-text rounded-full font-black text-[10px] tracking-[0.3em] uppercase flex items-center justify-center gap-3 border border-main-text/10 backdrop-blur-xl transition-all">
+                        <ShoppingBag class="w-4 h-4 text-cyan-500 group-hover:rotate-12 transition-transform" />
                         <span id="hero-catalog-text">Ver Catálogo</span>
                     </a>
                 </div>
@@ -56,9 +57,9 @@ import { ShoppingBag } from '@lucide/astro';
       </div>
 
       <div id="hero-content-right" class="flex justify-center lg:justify-end items-center order-1 lg:order-2">
-        <div id="logo-container" class="relative">
-          <div class="absolute inset-0 bg-cyan-500/15 dark:bg-cyan-500/10 blur-[100px] rounded-full animate-pulse"></div>
-          <img src="/logodark.png" alt="Logo" id="hero-logo" class="relative w-56 h-56 sm:w-72 sm:h-72 lg:w-120 lg:h-120 object-contain will-change-transform" />
+        <div id="logo-container" class="relative group">
+          <div class="absolute inset-0 bg-cyan-500/30 dark:bg-cyan-500/20 blur-[120px] rounded-full animate-pulse-slow group-hover:bg-purple-500/40 transition-colors duration-1000"></div>
+          <img src="/logodark.png" alt="Logo" id="hero-logo" class="relative w-56 h-56 sm:w-72 sm:h-72 lg:w-120 lg:h-120 object-contain will-change-transform drop-shadow-[0_0_30px_rgba(6,182,212,0.2)]" />
         </div>
       </div>
 
@@ -68,73 +69,87 @@ import { ShoppingBag } from '@lucide/astro';
 
 <script>
   import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
   import { currentLang, translations, type Language } from '../../store/langStore';
 
   const initHero = () => {
     const heroLogo = document.getElementById('hero-logo') as HTMLImageElement;
-    if (!heroLogo) return;
+    const heroSection = document.getElementById('hero');
+    const orbCyan = document.getElementById('orb-cyan');
+    const orbPurple = document.getElementById('orb-purple');
 
-    // --- Sincronización de Logo ---
+    if (!heroLogo || !heroSection) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // --- Sincronización Logo ---
     const syncLogo = () => {
       const isDark = document.documentElement.classList.contains('dark') || 
                      document.documentElement.getAttribute('data-theme') === 'dark';
       heroLogo.src = isDark ? '/logodark.png' : '/logolight.png';
     };
-
     new MutationObserver(syncLogo).observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme'] });
     syncLogo();
 
-    // --- Animación de Entrada ---
+    // --- Timeline Entrada ---
     const tl = gsap.timeline({ defaults: { ease: "expo.out", duration: 1.2 } });
-    tl.to("#hero-brand-wrapper", { opacity: 1, y: 0, delay: 0.2 })
+    tl.to("#hero-brand-wrapper", { opacity: 1, y: 0, delay: 0.3 })
       .to(".hero-anim-text", { y: 0, opacity: 1, stagger: 0.15 }, "-=1")
       .to("#hero-meta-wrapper", { opacity: 1, y: 0 }, "-=0.8");
 
-    // --- Flotación y Mouse ---
-    gsap.to(heroLogo, { y: "-=25", duration: 3, ease: "sine.inOut", repeat: -1, yoyo: true });
+    // --- Animación Fija (Flotación) ---
+    gsap.to(heroLogo, { y: "-=25", duration: 4, ease: "sine.inOut", repeat: -1, yoyo: true });
 
-    window.addEventListener('mousemove', (e) => {
-      const x = (e.clientX / window.innerWidth - 0.5);
-      const y = (e.clientY / window.innerHeight - 0.5);
-      gsap.to(heroLogo, { x: x * 40, y: y * 40, rotationY: x * 25, rotationX: -y * 25, duration: 1.5, ease: "power2.out", transformPerspective: 1200 });
-      gsap.to(".hero-orb", { x: x * 60, y: y * 60, duration: 2.5 });
+    // --- Interacción Mouse (Solo Desktop) ---
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (!isMobile) {
+      window.addEventListener('mousemove', (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5);
+        const y = (e.clientY / window.innerHeight - 0.5);
+        gsap.to(heroLogo, { x: x * 50, y: y * 50, rotationY: x * 30, rotationX: -y * 30, duration: 2, ease: "power2.out" });
+        gsap.to(".hero-orb", { x: x * 80, y: y * 80, duration: 3, stagger: 0.1 });
+      });
+    }
+
+    // --- Animación Scroll (Paralaje Orbes) ---
+    gsap.to(orbCyan, {
+      y: "-=150",
+      scrollTrigger: {
+        trigger: heroSection,
+        start: "top top",
+        end: "bottom top",
+        scrub: 1.5
+      }
     });
 
-    // --- Idioma Reactivo ---
+    gsap.to(orbPurple, {
+      y: "+=150",
+      scrollTrigger: {
+        trigger: heroSection,
+        start: "top top",
+        end: "bottom top",
+        scrub: 1.5
+      }
+    });
+
+    // --- Idioma ---
     currentLang.subscribe((lang: Language) => {
-      const texts = translations[lang].hero; // Usamos el store centralizado
-      const t1 = document.getElementById('hero-t1');
-      const t2 = document.getElementById('hero-t2');
-      const meta = document.getElementById('hero-meta-text');
-      const cta = document.getElementById('hero-cta-text');
-      const catalog = document.getElementById('hero-catalog-text');
-
-      if (!t1 || !t2 || !meta || !cta || !catalog) return;
-
-      // Si es la primera carga (durante la animación de entrada), no animamos el cambio de texto
-      const isInitial = tl.isActive();
-
-      if (isInitial) {
-          t1.innerText = texts.title1;
-          t2.innerText = texts.title2;
-          meta.innerHTML = texts.meta;
-          cta.innerText = texts.cta;
-          catalog.innerText = texts.catalog;
-      } else {
-          // Animación suave de cambio de texto para cambios posteriores
-          gsap.to([t1, t2, meta, cta, catalog], {
-            opacity: 0, 
-            y: 5,
-            duration: 0.2, 
-            onComplete: () => {
-              t1.innerText = texts.title1;
-              t2.innerText = texts.title2;
-              meta.innerHTML = texts.meta;
-              cta.innerText = texts.cta;
-              catalog.innerText = texts.catalog;
-              gsap.to([t1, t2, meta, cta, catalog], { opacity: 1, y: 0, duration: 0.4 });
-            }
-          });
+      const texts = translations[lang].hero;
+      const t1 = document.getElementById('hero-t1'), t2 = document.getElementById('hero-t2'), 
+            meta = document.getElementById('hero-meta-text'), cta = document.getElementById('hero-cta-text'), 
+            catalog = document.getElementById('hero-catalog-text');
+      
+      if (t1 && t2 && meta && cta && catalog) {
+        if (tl.isActive()) {
+          t1.innerText = texts.title1; t2.innerText = texts.title2; meta.innerHTML = texts.meta;
+          cta.innerText = texts.cta; catalog.innerText = texts.catalog;
+        } else {
+          gsap.to([t1, t2, meta, cta, catalog], { opacity: 0, y: 5, duration: 0.2, onComplete: () => {
+            t1.innerText = texts.title1; t2.innerText = texts.title2; meta.innerHTML = texts.meta;
+            cta.innerText = texts.cta; catalog.innerText = texts.catalog;
+            gsap.to([t1, t2, meta, cta, catalog], { opacity: 1, y: 0, duration: 0.4 });
+          }});
+        }
       }
     });
   };
@@ -145,7 +160,19 @@ import { ShoppingBag } from '@lucide/astro';
 
 <style>
   @reference "../../styles/global.css";
+  
+  :root { --main-bg: #DEE5E9; }
+  :root[data-theme="dark"], .dark { --main-bg: #050505; }
+  .bg-main-bg { background-color: var(--main-bg); }
+
   .mask-radial { mask-image: radial-gradient(circle, black 35%, transparent 100%); }
-  #logo-container { perspective: 1200px; }
-  :root[data-theme="light"] #hero { background: radial-gradient(circle at 50% 50%, #ffffff 0%, #f1f5f9 100%); }
+  #logo-container { perspective: 1200px; transform-style: preserve-3d; }
+
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.08); }
+  }
+  .animate-pulse-slow {
+    animation: pulse-slow 6s ease-in-out infinite;
+  }
 </style>

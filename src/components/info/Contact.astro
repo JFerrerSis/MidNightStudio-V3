@@ -6,8 +6,8 @@ const whatsappNumber = import.meta.env.PUBLIC_WHATSAPP_NUMBER || "584120000000";
 const whatsappLink = `https://wa.me/${whatsappNumber}`;
 ---
 
-<section id="contacto" class="relative py-12 md:py-24 px-4 sm:px-6 bg-main-bg overflow-hidden transition-colors duration-500">
-  <div id="bg-circle" class="absolute top-0 right-0 w-64 h-64 md:w-125 md:h-125 bg-cyan-500/5 rounded-full blur-[80px] md:blur-[120px] pointer-events-none"></div>
+<section id="contacto" class="relative py-12 md:py-24 px-4 sm:px-6 bg-transparent overflow-hidden transition-colors duration-500">
+  <div id="bg-circle" class="absolute top-0 right-0 w-64 h-64 md:w-125 md:h-125 bg-cyan-500/10 rounded-full blur-[80px] md:blur-[120px] pointer-events-none"></div>
 
   <div class="container mx-auto max-w-7xl relative z-10">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
@@ -51,40 +51,41 @@ const whatsappLink = `https://wa.me/${whatsappNumber}`;
         </div>
       </div>
 
-      <div class="relative w-full" id="form-card">
-        <div class="p-6 sm:p-8 md:p-12 rounded-4xl md:rounded-[2.5rem] bg-main-text/3 backdrop-blur-3xl border border-main-text/5 shadow-2xl relative overflow-hidden">
+<div class="relative w-full" id="form-card">
+        <div class="p-6 sm:p-8 md:p-12 rounded-4xl md:rounded-[2.5rem] 
+                    bg-main-text/3 backdrop-blur-2xl 
+                    border border-cyan-500/30 
+                    shadow-[0_0_40px_-10px_rgba(6,182,212,0.2)] 
+                    dark:shadow-[0_0_50px_-12px_rgba(6,182,212,0.15)] 
+                    relative overflow-hidden">
           
           <form id="midnight-contact-form" action="https://formspree.io/f/mjgpdjlp" method="POST" class="space-y-4 md:space-y-6 relative z-10">
             <div class="space-y-1.5 md:space-y-2 contact-reveal">
               <label class="text-[8px] md:text-[10px] uppercase tracking-widest font-black text-main-text/40 ml-2 md:ml-4" data-i18n="contact.name">Nombre / Empresa</label>
-              <input type="text" name="name" required class="w-full px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-main-bg border border-main-text/10 focus:border-cyan-500 outline-none text-sm md:text-base text-main-text transition-all" />
+              <input type="text" name="name" required 
+                class="w-full px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-main-bg/40 border border-main-text/10 focus:border-cyan-500 outline-none text-sm md:text-base text-main-text transition-all" />
             </div>
 
             <div class="space-y-1.5 md:space-y-2 contact-reveal">
               <label class="text-[8px] md:text-[10px] uppercase tracking-widest font-black text-main-text/40 ml-2 md:ml-4" data-i18n="contact.email">Correo Electrónico</label>
-              <input type="email" name="email" required class="w-full px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-main-bg border border-main-text/10 focus:border-cyan-500 outline-none text-sm md:text-base text-main-text transition-all" />
+              <input type="email" name="email" required 
+                class="w-full px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-main-bg/40 border border-main-text/10 focus:border-cyan-500 outline-none text-sm md:text-base text-main-text transition-all" />
             </div>
 
             <div class="space-y-1.5 md:space-y-2 contact-reveal">
               <label class="text-[8px] md:text-[10px] uppercase tracking-widest font-black text-main-text/40 ml-2 md:ml-4" data-i18n="contact.message">Tu idea...</label>
-              <textarea name="message" rows="4" required class="w-full px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-main-bg border border-main-text/10 focus:border-cyan-500 outline-none text-sm md:text-base text-main-text resize-none transition-all"></textarea>
+              <textarea name="message" rows="4" required 
+                class="w-full px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl bg-main-bg/40 border border-main-text/10 focus:border-cyan-500 outline-none text-sm md:text-base text-main-text resize-none transition-all"></textarea>
             </div>
 
-            <button type="submit" id="submit-btn" class="w-full py-4 md:py-5 bg-main-text text-main-bg rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] flex items-center justify-center gap-3 hover:opacity-90 active:scale-95 transition-all">
+            <button type="submit" id="submit-btn" 
+              class="w-full py-4 md:py-5 bg-cyan-500 text-black rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] flex items-center justify-center gap-3 hover:bg-cyan-400 active:scale-95 transition-all shadow-lg shadow-cyan-500/30">
               <span data-i18n="contact.send">Enviar Solicitud</span>
               <Send class="w-3 h-3 md:w-4 md:h-4" />
             </button>
           </form>
           
-          <div id="form-success" class="hidden absolute inset-0 bg-main-bg/95 backdrop-blur-xl z-20  flex-col items-center justify-center text-center p-4">
-             <div class="success-content flex flex-col items-center">
-                <div class="w-14 h-14 md:w-20 md:h-20 bg-cyan-500 rounded-full flex items-center justify-center text-black mb-4 md:mb-6 shadow-lg">
-                   <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-10 md:h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <h3 class="text-sm md:text-base text-main-text font-black uppercase tracking-[0.2em]" data-i18n="contact.success_title">¡Uff! Enviado</h3>
-             </div>
           </div>
-        </div>
       </div>
     </div>
   </div>

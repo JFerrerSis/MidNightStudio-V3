@@ -3,21 +3,65 @@ import Layout from "../layouts/Layout.astro";
 import Header from "../components/ui/Header.astro";
 import CatalogComponent from "../components/info/Catalog.astro";
 import CartModal from "../components/info/CartModal.astro";
-// IMPORTANTE: Importamos el nuevo modal de detalle
 import ProductModal from "../components/info/PorductModal.astro"; 
+import Footer from '../components/ui/Footer.astro';
+
 ---
 
-<Layout title="Catálogo Exclusivo | Midnight Studio">
+<Layout title="Catálogo | Midnight Studio">
   <Header />
   
-  <main class="min-h-screen bg-main-bg pt-24">
-    <div id="catalog-page-wrapper">
+  <main class="relative min-h-screen bg-main-bg pt-24 overflow-hidden">
+    <div class="absolute inset-0 z-0 pointer-events-none">
+      
+      <div class="absolute top-[-10%] left-[-10%] w-[70%] h-[70%] rounded-full bg-cyan-400/70 dark:bg-cyan-500/15 blur-[90px] animate-pulse"></div>
+      
+      <div class="absolute bottom-[-5%] right-[-5%] w-[60%] h-[60%] rounded-full bg-purple-500/60 dark:bg-purple-900/20 blur-[100px] animate-float"></div>
+      
+      <div class="absolute top-[25%] right-[15%] w-[40%] h-[40%] rounded-full bg-blue-500/40 dark:hidden blur-[80px]"></div>
+    </div>
+
+    <div id="catalog-page-wrapper" class="relative z-10">
       <CatalogComponent />
     </div>
   </main>
 
   <CartModal />
-  <ProductModal /> </Layout>
+  <ProductModal /> 
+  <Footer />
+</Layout>
+
+<style is:global>
+  :root { 
+    /* Fondo con suficiente contraste para soportar colores vibrantes */
+    --main-bg: #DEE5E9; 
+  }
+  :root[data-theme="dark"], .dark { 
+    --main-bg: #050505; 
+  }
+
+  .bg-main-bg { 
+    background-color: var(--main-bg); 
+    transition: background-color 0.4s ease-in-out;
+  }
+
+  /* Animaciones intensificadas */
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-40px, 30px) scale(1.2); }
+  }
+  .animate-float {
+    animation: float 10s ease-in-out infinite;
+  }
+
+  @keyframes pulse-vibrant {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+  .animate-pulse {
+    animation: pulse-vibrant 6s ease-in-out infinite;
+  }
+</style>
 
 <script>
   import gsap from 'gsap';
@@ -25,24 +69,19 @@ import ProductModal from "../components/info/PorductModal.astro";
   function initEntrance() {
     const wrapper = document.getElementById('catalog-page-wrapper');
     if (wrapper) {
-      // Animación de entrada con GSAP para el contenedor principal
       gsap.fromTo(wrapper, 
-        { 
-          opacity: 0, 
-          y: 30 
-        }, 
+        { opacity: 0, y: 30 }, 
         { 
           opacity: 1, 
           y: 0, 
           duration: 1, 
-          ease: "expo.out",
-          delay: 0.2 
+          ease: "power3.out",
+          delay: 0.1 
         }
       );
     }
   }
 
-  // Ejecución para carga normal y para ViewTransitions de Astro
   window.addEventListener('load', initEntrance);
   document.addEventListener('astro:page-load', initEntrance);
 </script>

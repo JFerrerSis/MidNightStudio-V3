@@ -1,6 +1,6 @@
 ---
 // src/components/info/CartModal.astro
-import { X, Send, Package, User } from '@lucide/astro';
+import { X, Send, Package, User, CheckCircle2, AlertCircle } from '@lucide/astro';
 import productosEs from "../../data/productos.json";
 import productosEn from "../../data/productEn.json";
 
@@ -12,6 +12,8 @@ const allData = {
 };
 ---
 
+<div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-2000 flex flex-col gap-3 pointer-events-none"></div>
+
 <div 
   id="cart-overlay" 
   data-all-products={JSON.stringify(allData)} 
@@ -19,10 +21,10 @@ const allData = {
 >
   <div 
     id="cart-panel" 
-    class="relative w-full max-w-5xl bg-modal-bg rounded-4xl sm:rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] translate-y-10 transition-all duration-500 ease-out max-h-[95vh] lg:max-h-[90vh] flex flex-col"
+    class="relative w-full max-w-5xl bg-modal-bg rounded-4xl sm:rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] translate-y-10 transition-all duration-500 ease-out max-h-[95vh] lg:max-h-[90vh] flex flex-col border border-default-border"
   >
     
-    <button id="close-cart" class="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 p-3 sm:p-4 bg-main-text/5 hover:bg-main-text/10 rounded-full transition-all text-main-text active:scale-90 cursor-pointer">
+    <button id="close-cart" class="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 p-3 sm:p-4 bg-main-text/5 hover:bg-cyan-500 hover:text-black rounded-full transition-all text-main-text active:scale-90 cursor-pointer border border-main-text/5">
       <X class="w-5 h-5 sm:w-6 sm:h-6" />
     </button>
 
@@ -34,7 +36,7 @@ const allData = {
             <User class="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <h2 class="text-2xl sm:text-3xl font-black text-main-text uppercase tracking-tighter italic leading-none" data-i18n="cart.title">Finalizar Pedido</h2>
-          <p class="text-[9px] sm:text-[10px] text-main-text/40 uppercase font-bold tracking-[0.3em] mt-2" data-i18n="cart.subtitle">Completa tus datos de envío</p>
+          <p class="text-[9px] sm:text-[10px] text-main-text/40 uppercase font-bold tracking-[0.3em] mt-2" data-i18n="cart.subtitle">Datos de entrega exclusiva</p>
         </header>
 
         <form id="whatsapp-form" class="space-y-5 sm:space-y-6" data-wa={whatsappNumber} novalidate>
@@ -66,7 +68,7 @@ const allData = {
               </select>
             </div>
             <div class="space-y-2">
-              <label class="text-[9px] sm:text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.date">Fecha de Entrega</label>
+              <label class="text-[9px] sm:text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.date">Fecha</label>
               <input type="date" id="order-date" required 
                 class="cart-input w-full bg-main-text/5 border border-default-border p-3.5 sm:p-4 rounded-2xl text-main-text text-sm font-bold outline-none focus:border-cyan-500" />
             </div>
@@ -104,17 +106,17 @@ const allData = {
           <div class="flex justify-between items-end mb-6">
             <div class="flex flex-col">
                 <span class="text-[10px] uppercase font-black text-main-text/30 tracking-widest" data-i18n="cart.total">Total</span>
-                <span id="cart-total-price" class="text-3xl sm:text-4xl font-black text-cyan-500 tracking-tighter">$0.00</span>
+                <span id="cart-total-price" class="text-4xl font-black text-cyan-500 tracking-tighter leading-none">$0.00</span>
             </div>
-            <div class="flex flex-col items-end">
-                <span class="text-[8px] sm:text-[9px] text-main-text/40 font-bold uppercase tracking-wider text-right italic leading-tight">
-                    * Consulta la tasa del día <br class="hidden sm:block"> vía WhatsApp
+            <div class="text-right">
+                <span class="text-[8px] text-main-text/40 font-bold uppercase tracking-wider italic">
+                    Tasa BCV disponible <br> vía WhatsApp
                 </span>
             </div>
           </div>
 
-          <button type="submit" form="whatsapp-form" class="w-full bg-cyan-500 hover:bg-main-text hover:text-card-bg text-black font-black py-5 sm:py-6 rounded-3xl flex items-center justify-center gap-4 transition-all active:scale-[0.98] shadow-2xl shadow-cyan-500/20 uppercase tracking-[0.2em] text-[10px] sm:text-xs cursor-pointer">
-            <Send class="w-4 h-4 sm:w-5 sm:h-5" />
+          <button type="submit" form="whatsapp-form" class="w-full bg-cyan-500 hover:bg-main-text hover:text-modal-bg text-black font-black py-6 rounded-3xl flex items-center justify-center gap-4 transition-all active:scale-[0.98] shadow-2xl shadow-cyan-500/20 uppercase tracking-[0.2em] text-[10px] sm:text-xs cursor-pointer group">
+            <Send class="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
             <span data-i18n="cart.send">Confirmar Pedido</span>
           </button>
         </div>
@@ -124,12 +126,30 @@ const allData = {
 </div>
 
 <style>
-  :root { --modal-bg: #ffffff; --default-border: #f0f0f0; --main-text-color: #000000; }
-  :root[data-theme="dark"], .dark { --modal-bg: #0e0e0e; --default-border: #1a1a1a; --main-text-color: #ffffff; }
+  :root { --modal-bg: #ffffff; --default-border: rgba(0,0,0,0.08); --main-text-color: #000000; }
+  :root[data-theme="dark"], .dark { --modal-bg: #0a0a0a; --default-border: rgba(255,255,255,0.08); --main-text-color: #ffffff; }
 
   .bg-modal-bg { background-color: var(--modal-bg); }
   .border-default-border { border-color: var(--default-border); }
   .text-main-text { color: var(--main-text-color); }
+  .text-modal-bg { color: var(--modal-bg); }
+
+  /* Toast Styles */
+  .toast-card {
+    background: var(--modal-bg);
+    border: 1px solid var(--default-border);
+    padding: 1.25rem 1.5rem;
+    border-radius: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 30px 60px -12px rgba(0,0,0,0.5);
+    min-width: 300px;
+    pointer-events: auto;
+  }
+  .toast-success { border-left: 4px solid #06b6d4; }
+  .toast-error { border-left: 4px solid #ef4444; }
+  .toast-warning { border-left: 4px solid #f59e0b; }
 
   .input-error {
     border-color: #ef4444 !important;
@@ -140,18 +160,9 @@ const allData = {
   .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
   .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.3); border-radius: 10px; }
 
-  body.modal-open { overflow: hidden; }
-
-  @media (min-width: 1024px) {
-    #cart-panel { height: 85vh; }
+  @media (max-width: 640px) {
+    #cart-panel { border-radius: 0; }
   }
-
-  input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: var(--calendar-filter);
-    cursor: pointer;
-  }
-  :root { --calendar-filter: invert(0); }
-  :root[data-theme="dark"] { --calendar-filter: invert(1); }
 </style>
 
 <script>
@@ -167,18 +178,42 @@ const allData = {
   const addressField = document.getElementById('order-address') as HTMLTextAreaElement;
   const allProductsData = JSON.parse(overlay?.dataset.allProducts || '{}');
 
-  // --- 1. CONTROL DE APERTURA ---
+  // --- SISTEMA DE TOASTS ---
+  const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    const icon = type === 'success' ? '✨' : type === 'error' ? '🚫' : '⚠️';
+    
+    toast.className = `toast-card toast-${type} opacity-0 translate-y-[-20px]`;
+    toast.innerHTML = `
+      <span class="text-xl">${icon}</span>
+      <div class="flex flex-col">
+        <p class="text-[10px] font-black uppercase tracking-widest text-main-text">${message}</p>
+      </div>
+    `;
+
+    container.appendChild(toast);
+    gsap.to(toast, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.7)" });
+
+    setTimeout(() => {
+      gsap.to(toast, { opacity: 0, scale: 0.9, duration: 0.3, onComplete: () => toast.remove() });
+    }, 4000);
+  };
+
+  // --- CONTROL DE APERTURA ---
   isCartOpen.subscribe((open) => {
     if (open) {
       overlay?.classList.remove('invisible');
-      gsap.to(overlay, { opacity: 1, duration: 0.4, ease: "power2.out" });
-      gsap.fromTo(panel, { y: 30, scale: 0.98, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.2)" });
-      document.body.classList.add('modal-open');
+      gsap.to(overlay, { opacity: 1, duration: 0.4 });
+      gsap.fromTo(panel, { y: 40, scale: 0.95, opacity: 0 }, { y: 0, scale: 1, opacity: 1, duration: 0.5, ease: "expo.out" });
+      document.body.style.overflow = 'hidden';
     } else {
-      gsap.to(panel, { y: 20, scale: 0.98, opacity: 0, duration: 0.3 });
+      gsap.to(panel, { y: 30, scale: 0.95, opacity: 0, duration: 0.3 });
       gsap.to(overlay, { opacity: 0, duration: 0.3, onComplete: () => {
         overlay?.classList.add('invisible');
-        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
       }});
     }
   });
@@ -186,7 +221,7 @@ const allData = {
   document.getElementById('close-cart')?.addEventListener('click', () => isCartOpen.set(false));
   overlay?.addEventListener('click', (e) => { if(e.target === overlay) isCartOpen.set(false); });
 
-  // --- 2. VALIDACIONES ---
+  // --- VALIDACIONES ---
   const validateField = (input: HTMLInputElement | HTMLTextAreaElement) => {
     if (!input.checkValidity()) {
       input.classList.add('input-error');
@@ -197,17 +232,13 @@ const allData = {
     return true;
   };
 
-  form.querySelectorAll('.cart-input').forEach(input => {
-    input.addEventListener('input', () => (input as HTMLElement).classList.remove('input-error'));
-  });
-
   methodSelect?.addEventListener('change', () => {
     const isDelivery = methodSelect.value === 'Delivery';
     addressWrapper?.classList.toggle('hidden', !isDelivery);
     addressField.required = isDelivery;
   });
 
-  // --- 3. RENDER ---
+  // --- RENDERIZADO ---
   const renderCart = () => {
     const items = cartItems.get();
     const lang = currentLang.get();
@@ -216,20 +247,20 @@ const allData = {
     if (!container || !totalDisplay) return;
 
     if (items.length === 0) {
-      container.innerHTML = `<div class="h-32 flex flex-col items-center justify-center opacity-20 font-black uppercase text-[10px] tracking-widest text-main-text">Vacío / Empty</div>`;
+      container.innerHTML = `<div class="h-40 flex flex-col items-center justify-center opacity-20 font-black uppercase text-[10px] tracking-[0.3em] text-main-text">Tu selección está vacía</div>`;
     } else {
       container.innerHTML = items.map(item => {
         const info = allProductsData[lang]?.find((p: any) => p.id === item.id);
         const displayName = info ? info.nombre : item.name;
         return `
-          <div class="flex items-center gap-3 p-3 sm:p-4 bg-main-text/[0.03] border border-default-border rounded-2xl sm:rounded-3xl group">
-            <img src="${item.img}" class="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-xl" />
+          <div class="flex items-center gap-4 p-4 bg-main-text/[0.03] border border-default-border rounded-3xl group transition-all hover:border-main-text/20">
+            <img src="${item.img}" class="w-16 h-16 object-cover rounded-2xl shadow-lg" />
             <div class="grow">
-              <h4 class="text-[9px] sm:text-[10px] font-black text-main-text uppercase leading-tight">${displayName}</h4>
-              <p class="text-cyan-500 font-black text-xs mt-0.5">$${item.price.toFixed(2)} <span class="text-main-text/20 ml-1 font-normal">x${item.quantity}</span></p>
+              <h4 class="text-[10px] font-black text-main-text uppercase leading-tight tracking-tight">${displayName}</h4>
+              <p class="text-cyan-500 font-black text-sm mt-1">$${item.price.toFixed(2)} <span class="text-main-text/20 ml-1 font-bold text-[10px]">x${item.quantity}</span></p>
             </div>
-            <button onclick="window.deleteItem('${item.id}')" class="p-2 text-main-text/10 hover:text-red-500 transition-all cursor-pointer">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <button onclick="window.deleteItem('${item.id}')" class="p-2 text-main-text/20 hover:text-red-500 transition-colors cursor-pointer">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
           </div>`;
       }).join('');
@@ -239,17 +270,26 @@ const allData = {
 
   cartItems.subscribe(() => renderCart());
 
-  // --- 4. ENVÍO WHATSAPP ---
+  // --- ENVÍO ---
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
     const items = cartItems.get();
 
-    if (items.length === 0) return alert('Carrito vacío');
+    if (items.length === 0) {
+      showToast('Añade al menos un producto', 'warning');
+      return;
+    }
 
     const inputs = form.querySelectorAll('input[required], textarea[required]');
     let isValid = true;
     inputs.forEach((input: any) => { if (!validateField(input)) isValid = false; });
-    if (!isValid) return;
+
+    if (!isValid) {
+      showToast('Revisa los datos marcados', 'error');
+      return;
+    }
+
+    showToast('Redirigiendo a WhatsApp...', 'success');
 
     const name = (document.getElementById('client-name') as HTMLInputElement).value;
     const id = (document.getElementById('client-id') as HTMLInputElement).value;
@@ -263,16 +303,18 @@ const allData = {
     msg += `👤 *Cliente:* ${name}\n`;
     msg += `🆔 *Cédula:* ${id}\n`;
     msg += `📱 *WhatsApp:* ${phone}\n`;
-    msg += `📅 *Fecha de Entrega:* ${date}\n`;
+    msg += `📅 *Fecha:* ${date}\n`;
     msg += `📍 *Método:* ${method}\n`;
     if(method === 'Delivery') msg += `🏠 *Dirección:* ${address}\n`;
     msg += `💳 *Pago:* ${payment}\n\n`;
     msg += `📦 *PRODUCTOS:*\n`;
     items.forEach(i => { msg += `• ${i.quantity}x ${i.name} ($${(i.price * i.quantity).toFixed(2)})\n`; });
     msg += `\n💰 *TOTAL: $${cartTotal.get().toFixed(2)}*`;
-    msg += `\n\n⚠️ _Nota: Consultar tasa del día para pagos en Bs._`;
 
-    window.open(`https://wa.me/${form.dataset.wa}?text=${encodeURIComponent(msg)}`, '_blank');
+    setTimeout(() => {
+        window.open(`https://wa.me/${form.dataset.wa}?text=${encodeURIComponent(msg)}`, '_blank');
+        isCartOpen.set(false);
+    }, 800);
   });
 
   (window as any).deleteItem = (id: string) => removeFromCart(id);
