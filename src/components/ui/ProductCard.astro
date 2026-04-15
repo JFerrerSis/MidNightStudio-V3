@@ -93,39 +93,88 @@ import { Plus, Check } from '@lucide/astro';
   import { addToCart } from '../../store/cartStore';
   import gsap from 'gsap';
 
-  // Usamos una variable para evitar múltiples clics accidentales durante la animación
-  let isAnimating = false;
+  const setupCartButtons = () => {
+    const cartButtons = document.querySelectorAll('.add-to-cart-btn');
 
-  document.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest('.add-to-cart-btn');
-    if (!btn || isAnimating) return;
+    cartButtons.forEach((btn) => {
+      const button = btn as HTMLButtonElement;
+      
+      // Limpiamos cualquier rastro previo para evitar duplicados
+      button.onclick = null; 
 
-    e.preventDefault();
-    isAnimating = true;
+      button.onclick = (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation();
 
-    const data = JSON.parse(btn.getAttribute('data-product') || '{}');
-    
-    addToCart({
-      id: data.id,
-      name: data.nombre,
-      price: data.precio,
-      img: data.imagen,
-      quantity: 1
+        // Bloqueo de seguridad mientras la animación sucede
+        if (button.dataset.animating === "true") return;
+        button.dataset.animating = "true";
+
+        // 1. Lógica de datos
+        const data = JSON.parse(button.getAttribute('data-product') || '{}');
+        addToCart({
+          id: data.id,
+          name: data.nombre,
+          price: data.precio,
+          img: data.imagen,
+          quantity: 1
+        });
+
+        // 2. Animación con GSAP Context (Limpia automáticamente al terminar)
+        const plusIcon = button.querySelector('.plus-icon');
+        const checkIcon = button.querySelector('.check-icon');
+
+        let ctx = gsap.context(() => {
+          const tl = gsap.timeline({
+            onComplete: () => { 
+              button.dataset.animating = "false";
+              ctx.revert(); // Opcional: revierte estilos inline si prefieres que el CSS original tome el mando total
+            }
+          });
+
+          tl.to(plusIcon, { 
+            y: -20, 
+            opacity: 0, 
+            duration: 0.15, 
+            ease: "power2.in" 
+          })
+          .to(checkIcon, { 
+            y: 0, 
+            opacity: 1, 
+            duration: 0.25, 
+            ease: "back.out(2)" 
+          }, "-=0.1")
+          .to(button, { 
+            backgroundColor: "#06b6d4", 
+            color: "#000", 
+            borderColor: "transparent", 
+            duration: 0.2 
+          }, "-=0.25")
+          // Pausa con el check visible
+          .to(checkIcon, { 
+            y: 20, 
+            opacity: 0, 
+            duration: 0.15, 
+            delay: 0.8 
+          })
+          .to(plusIcon, { 
+            y: 0, 
+            opacity: 1, 
+            duration: 0.15, 
+            ease: "power2.out" 
+          })
+          .to(button, { 
+            backgroundColor: "", // Vuelve al valor del CSS (variable o clase)
+            color: "", 
+            borderColor: "", 
+            duration: 0.2 
+          }, "-=0.15");
+        }, button); // El segundo parámetro limita el alcance al botón actual
+      };
     });
+  };
 
-    const plusIcon = btn.querySelector('.plus-icon');
-    const checkIcon = btn.querySelector('.check-icon');
-
-    const tl = gsap.timeline({
-      onComplete: () => { isAnimating = false; }
-    });
-
-    // Animación optimizada para que sea rápida y clara
-    tl.to(plusIcon, { y: -20, opacity: 0, duration: 0.15 })
-      .to(checkIcon, { y: 0, opacity: 1, duration: 0.25, ease: "back.out(2)" }, "-=0.1")
-      .to(btn, { backgroundColor: "#06b6d4", color: "#000", borderColor: "transparent", duration: 0.2 }, "-=0.25")
-      .to(checkIcon, { y: 20, opacity: 0, duration: 0.15, delay: 0.6 })
-      .to(plusIcon, { y: 0, opacity: 1, duration: 0.15 })
-      .to(btn, { backgroundColor: "", color: "", borderColor: "", duration: 0.2 }, "-=0.15");
-  });
+  // Astro View Transitions compatibility
+  document.addEventListener('astro:page-load', setupCartButtons);
+  setupCartButtons();
 </script>

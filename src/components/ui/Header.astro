@@ -4,20 +4,20 @@ import { ShoppingCart, Menu, X, Languages, Sun, Moon, LayoutGrid, BookOpen, Sett
 
 const navI18n = {
   es: [
-    { label: 'Inicio', slug: '#inicio', icon: LayoutGrid },
-    { label: 'Servicios', slug: '#servicios', icon: Settings },
+    { label: 'Inicio', slug: '/#inicio', icon: LayoutGrid },
+    { label: 'Servicios', slug: '/#servicios', icon: Settings },
     { label: 'Catalogo', slug: '/catalogo', icon: ShoppingCart },
-    { label: 'Nosotros', slug: '#nosotros', icon: Users },
-    { label: 'Galería', slug: '#galeria', icon: BookOpen },
-    { label: 'Contacto', slug: '#contacto', icon: Mail }
+    { label: 'Nosotros', slug: '/#nosotros', icon: Users },
+    { label: 'Galería', slug: '/#galeria', icon: BookOpen },
+    { label: 'Contacto', slug: '/#contacto', icon: Mail }
   ],
   en: [
-    { label: 'Home', slug: '#inicio', icon: LayoutGrid },
-    { label: 'Services', slug: '#servicios', icon: Settings },
+    { label: 'Home', slug: '/#inicio', icon: LayoutGrid },
+    { label: 'Services', slug: '/#servicios', icon: Settings },
     { label: 'Catalog', slug: '/catalogo', icon: ShoppingCart },
-    { label: 'About', slug: '#nosotros', icon: Users },
-    { label: 'Gallery', slug: '#galeria', icon: BookOpen },
-    { label: 'Contact', slug: '#contacto', icon: Mail }
+    { label: 'About', slug: '/#nosotros', icon: Users },
+    { label: 'Gallery', slug: '/#galeria', icon: BookOpen },
+    { label: 'Contact', slug: '/#contacto', icon: Mail }
   ]
 };
 ---
@@ -51,9 +51,9 @@ const navI18n = {
     </nav>
 
     <div class="flex items-center gap-1.5">
-      <button id="cart-icon-btn" class="relative p-2.5 rounded-full bg-white/5 hover:bg-cyan-500/10 text-main-text/60 hover:text-cyan-400 transition-all cursor-pointer group">
+      <button id="cart-icon-btn" class="hidden relative p-2.5 rounded-full bg-white/5 hover:bg-cyan-500/10 text-main-text/60 hover:text-cyan-400 transition-all cursor-pointer group">
         <ShoppingCart class="w-4 h-4" />
-        <span id="cart-count" class="hidden absolute top-0.5 right-0.5 bg-cyan-500 w-2 h-2 rounded-full border border-header-bg shadow-[0_0_8px_rgba(6,182,212,0.8)] animate-pulse"></span>
+        <span id="cart-count" class="hidden absolute -top-1 -right-1 bg-cyan-500 text-[10px] text-white font-bold h-4 w-4  items-center justify-center rounded-full border border-header-bg shadow-[0_0_8px_rgba(6,182,212,0.8)] animate-pulse">0</span>
       </button>
 
       <button id="menu-toggle" class="md:hidden p-2 active:scale-75 transition-all cursor-pointer">
@@ -83,101 +83,156 @@ const navI18n = {
 </header>
 
 <style>
-  .bg-solid-menu {
-    background-color: #ffffff !important;
-  }
-  :root[data-theme="dark"] .bg-solid-menu {
-    background-color: #0a0a0a !important;
-  }
-  #mobile-menu {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
+  .bg-solid-menu { background-color: #ffffff !important; }
+  :root[data-theme="dark"] .bg-solid-menu { background-color: #0a0a0a !important; }
+  #mobile-menu { backdrop-filter: none !important; }
 </style>
 
 <script>
   import gsap from 'gsap';
-  import { cartItems } from '../../store/cartStore';
+  import { isCartOpen, cartCount } from '../../store/cartStore';
   import { currentLang, type Language } from '../../store/langStore';
 
-  // Sincronizado exactamente con los 6 items de navI18n
+  // Solo ES y EN como solicitaste
   const translations: Record<Language, string[]> = {
     es: ['Inicio', 'Servicios', 'Catalogo', 'Nosotros', 'Galería', 'Contacto'],
     en: ['Home', 'Services', 'Catalog', 'About', 'Gallery', 'Contact']
   };
 
-  const menuToggle = document.getElementById('menu-toggle');
-  const mobileMenu = document.getElementById('mobile-menu');
-  const iconOpen = document.getElementById('icon-open');
-  const iconClose = document.getElementById('icon-close');
-  const langLabel = document.getElementById('lang-label');
-  const langSwitch = document.getElementById('lang-switch');
-  const themeToggles = document.querySelectorAll('#theme-toggle');
-  const cartBtn = document.getElementById('cart-icon-btn');
-  const cartCount = document.getElementById('cart-count');
+  const initHeader = () => {
+    // Selectores con Type Casting para evitar errores de TS (Property 'onclick' does not exist)
+    const menuToggle = document.getElementById('menu-toggle') as HTMLButtonElement | null;
+    const mobileMenu = document.getElementById('mobile-menu') as HTMLElement | null;
+    const iconOpen = document.getElementById('icon-open') as HTMLElement | null;
+    const iconClose = document.getElementById('icon-close') as HTMLElement | null;
+    const langLabel = document.getElementById('lang-label') as HTMLElement | null;
+    const langSwitch = document.getElementById('lang-switch') as HTMLButtonElement | null;
+    const themeToggles = document.querySelectorAll('#theme-toggle');
+    const cartBtn = document.getElementById('cart-icon-btn') as HTMLButtonElement | null;
+    const cartCountEl = document.getElementById('cart-count') as HTMLElement | null;
 
-  let isMenuOpen = false;
+    let isMenuOpen = false;
 
-  const updateLang = (lang: Language) => {
-    if (langLabel) langLabel.innerText = lang.toUpperCase();
-    
-    document.querySelectorAll('[data-index]').forEach(el => {
-      const idx = parseInt(el.getAttribute('data-index') || '0');
-      const textSpan = el.querySelector('.nav-text-content') || el.querySelector('.mobile-text-content');
-      if (textSpan && translations[lang][idx]) {
-        textSpan.textContent = translations[lang][idx];
+    // --- 1. LÓGICA DE IDIOMAS (ES / EN) ---
+    const updateLang = (lang: Language, animate = true) => {
+      if (langLabel) langLabel.innerText = lang.toUpperCase();
+      
+      const texts = document.querySelectorAll('.nav-text-content, .mobile-text-content');
+      
+      const applyChange = () => {
+        document.querySelectorAll('[data-index]').forEach(el => {
+          const idx = parseInt(el.getAttribute('data-index') || '0');
+          const textSpan = el.querySelector('.nav-text-content') || el.querySelector('.mobile-text-content');
+          if (textSpan && translations[lang][idx]) {
+            textSpan.textContent = translations[lang][idx];
+          }
+        });
+        localStorage.setItem('selected-lang', lang);
+        currentLang.set(lang);
+      };
+
+      if (animate) {
+        gsap.to(texts, { opacity: 0, y: -5, duration: 0.2, onComplete: () => {
+          applyChange();
+          gsap.to(texts, { opacity: 1, y: 0, duration: 0.3 });
+        }});
+      } else {
+        applyChange();
+      }
+    };
+
+    if (langSwitch) {
+      langSwitch.onclick = (e) => {
+        e.preventDefault();
+        const next: Language = currentLang.get() === 'es' ? 'en' : 'es';
+        updateLang(next);
+      };
+    }
+
+    // --- 2. LÓGICA DEL CARRITO (ELIMINA DOBLE CLICK) ---
+    if (cartBtn) {
+      const isCatalog = window.location.pathname.includes('/catalogo');
+      
+      // Visibilidad con GSAP
+      if (isCatalog) {
+        gsap.to(cartBtn, { display: 'flex', opacity: 1, scale: 1, duration: 0.4 });
+      } else {
+        gsap.set(cartBtn, { display: 'none', opacity: 0 });
+      }
+
+      // Evento blindado para evitar duplicados
+      cartBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopImmediatePropagation(); // CRÍTICO: Evita duplicación de eventos
+        isCartOpen.set(true);
+      };
+    }
+
+    // Suscripción al contador con animación GSAP
+    cartCount.subscribe(count => {
+      if (cartCountEl) {
+        cartCountEl.innerText = count.toString();
+        if (count > 0) {
+          cartCountEl.classList.remove('hidden');
+          gsap.fromTo(cartCountEl, { scale: 1.5 }, { scale: 1, duration: 0.4, ease: "back.out(2)" });
+        } else {
+          cartCountEl.classList.add('hidden');
+        }
       }
     });
 
-    localStorage.setItem('selected-lang', lang);
-    currentLang.set(lang);
-    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { lang } }));
+    // --- 3. MENÚ MÓVIL ---
+    const toggleMenu = () => {
+      isMenuOpen = !isMenuOpen;
+      if (isMenuOpen) {
+        mobileMenu?.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
+        mobileMenu?.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+        iconOpen?.classList.add('opacity-0', 'scale-0');
+        iconClose?.classList.add('opacity-100', 'scale-100', 'rotate-0');
+        gsap.fromTo(".mobile-link", { opacity: 0, y: 10 }, { opacity: 1, y: 0, stagger: 0.05, duration: 0.3 });
+      } else {
+        mobileMenu?.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
+        mobileMenu?.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+        iconOpen?.classList.remove('opacity-0', 'scale-0');
+        iconClose?.classList.remove('opacity-100', 'scale-100', 'rotate-0');
+      }
+    };
+
+    if (menuToggle) menuToggle.onclick = (e) => { e.stopPropagation(); toggleMenu(); };
+
+    // --- 4. TEMA (MODO OSCURO) ---
+    const applyTheme = (theme: string, animate = true) => {
+      const isDark = theme === 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.classList.toggle('dark', isDark);
+      
+      const sun = document.getElementById('sun-icon');
+      const moon = document.getElementById('moon-icon');
+
+      if (animate) {
+        gsap.to(sun, { scale: isDark ? 0 : 1, rotate: isDark ? 90 : 0, opacity: isDark ? 0 : 1, duration: 0.4 });
+        gsap.to(moon, { scale: isDark ? 1 : 0, rotate: isDark ? 0 : -90, opacity: isDark ? 1 : 0, duration: 0.4 });
+      } else {
+        gsap.set(sun, { scale: isDark ? 0 : 1, opacity: isDark ? 0 : 1 });
+        gsap.set(moon, { scale: isDark ? 1 : 0, opacity: isDark ? 1 : 0 });
+      }
+    };
+
+    themeToggles.forEach(btn => {
+      (btn as HTMLElement).onclick = () => {
+        const next = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+        localStorage.setItem('theme', next);
+        applyTheme(next);
+      };
+    });
+
+    // Ejecución inicial
+    const savedLang = (localStorage.getItem('selected-lang') as Language) || 'es';
+    updateLang(savedLang, false);
+    applyTheme(localStorage.getItem('theme') || 'dark', false);
   };
 
-  langSwitch?.addEventListener('click', () => {
-    const current = (localStorage.getItem('selected-lang') as Language) || 'es';
-    const nextLang: Language = current === 'es' ? 'en' : 'es';
-    updateLang(nextLang);
-  });
-
-  const toggleMenu = () => {
-    isMenuOpen = !isMenuOpen;
-    if (isMenuOpen) {
-      mobileMenu?.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
-      mobileMenu?.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
-      iconOpen?.classList.add('opacity-0', 'scale-0');
-      iconClose?.classList.add('opacity-100', 'scale-100', 'rotate-0');
-      gsap.fromTo(".mobile-link", { opacity: 0, y: 10 }, { opacity: 1, y: 0, stagger: 0.05, duration: 0.3, ease: "power2.out" });
-    } else {
-      mobileMenu?.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
-      mobileMenu?.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
-      iconOpen?.classList.remove('opacity-0', 'scale-0');
-      iconClose?.classList.remove('opacity-100', 'scale-100', 'rotate-0');
-    }
-  };
-
-  document.querySelectorAll('.mobile-link').forEach(link => {
-    link.addEventListener('click', () => { if(isMenuOpen) toggleMenu(); });
-  });
-
-  menuToggle?.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
-
-  const savedLang = (localStorage.getItem('selected-lang') as Language) || 'es';
-  updateLang(savedLang);
-
-  const applyTheme = (theme: string) => {
-    const isDark = theme === 'dark';
-    document.documentElement.setAttribute('data-theme', theme);
-    document.documentElement.classList.toggle('dark', isDark);
-    document.getElementById('sun-icon')?.classList.toggle('scale-0', isDark);
-    document.getElementById('moon-icon')?.classList.toggle('scale-0', !isDark);
-  };
-
-  themeToggles.forEach(btn => btn.addEventListener('click', () => {
-    const next = (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark' ? 'light' : 'dark';
-    localStorage.setItem('theme', next);
-    applyTheme(next);
-  }));
-
-  applyTheme(localStorage.getItem('theme') || 'dark');
+  // Inicializar en carga y tras navegación de Astro
+  document.addEventListener('astro:page-load', initHeader);
+  initHeader();
 </script>
