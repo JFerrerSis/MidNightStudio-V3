@@ -1,6 +1,6 @@
 ---
 // src/components/info/CartModal.astro
-import { X, Send, Package, User, Info } from '@lucide/astro';
+import { X, Send, Package, User } from '@lucide/astro';
 import productosEs from "../../data/productos.json";
 import productosEn from "../../data/productEn.json";
 
@@ -15,11 +15,11 @@ const allData = {
 <div 
   id="cart-overlay" 
   data-all-products={JSON.stringify(allData)} 
-  class="fixed inset-0 bg-[#050505]/95 backdrop-blur-xl z-[999] invisible opacity-0 py-4 sm:py-10 px-2 sm:px-4 flex items-center justify-center transition-all duration-500"
+  class="fixed inset-0 bg-[#050505]/95 backdrop-blur-xl z-999 invisible opacity-0 py-4 sm:py-10 px-2 sm:px-4 flex items-center justify-center transition-all duration-500"
 >
   <div 
     id="cart-panel" 
-    class="relative w-full max-w-5xl bg-modal-bg rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] translate-y-10 transition-all duration-500 ease-out max-h-[95vh] lg:max-h-[90vh] flex flex-col"
+    class="relative w-full max-w-5xl bg-modal-bg rounded-4xl sm:rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] translate-y-10 transition-all duration-500 ease-out max-h-[95vh] lg:max-h-[90vh] flex flex-col"
   >
     
     <button id="close-cart" class="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 p-3 sm:p-4 bg-main-text/5 hover:bg-main-text/10 rounded-full transition-all text-main-text active:scale-90 cursor-pointer">
@@ -66,7 +66,7 @@ const allData = {
               </select>
             </div>
             <div class="space-y-2">
-              <label class="text-[9px] sm:text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.date">Fecha</label>
+              <label class="text-[9px] sm:text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.date">Fecha de Entrega</label>
               <input type="date" id="order-date" required 
                 class="cart-input w-full bg-main-text/5 border border-default-border p-3.5 sm:p-4 rounded-2xl text-main-text text-sm font-bold outline-none focus:border-cyan-500" />
             </div>
@@ -89,7 +89,7 @@ const allData = {
         </form>
       </div>
 
-      <div class="w-full lg:w-1/2 p-6 sm:p-12 bg-main-text/[0.02] flex flex-col lg:h-full">
+      <div class="w-full lg:w-1/2 p-6 sm:p-12 bg-main-text/2 flex flex-col lg:h-full">
         <header class="mb-8 shrink-0">
           <div class="flex items-center gap-3 text-main-text">
              <Package class="text-cyan-500 w-5 h-5" />
@@ -98,7 +98,7 @@ const allData = {
           <div class="h-1 w-12 bg-cyan-500 mt-2"></div>
         </header>
 
-        <div id="cart-items-container" class="space-y-4 lg:overflow-y-auto lg:grow pr-2 custom-scrollbar min-h-[200px] mb-8 lg:mb-0"></div>
+        <div id="cart-items-container" class="space-y-4 lg:grow pr-2 lg:overflow-y-auto custom-scrollbar min-h-50 mb-8 lg:mb-0"></div>
 
         <div class="mt-auto pt-8 border-t border-default-border shrink-0">
           <div class="flex justify-between items-end mb-6">
@@ -113,7 +113,7 @@ const allData = {
             </div>
           </div>
 
-          <button type="submit" form="whatsapp-form" class="w-full bg-cyan-500 hover:bg-main-text hover:text-card-bg text-black font-black py-5 sm:py-6 rounded-[1.5rem] sm:rounded-3xl flex items-center justify-center gap-4 transition-all active:scale-[0.98] shadow-2xl shadow-cyan-500/20 uppercase tracking-[0.2em] text-[10px] sm:text-xs cursor-pointer">
+          <button type="submit" form="whatsapp-form" class="w-full bg-cyan-500 hover:bg-main-text hover:text-card-bg text-black font-black py-5 sm:py-6 rounded-3xl flex items-center justify-center gap-4 transition-all active:scale-[0.98] shadow-2xl shadow-cyan-500/20 uppercase tracking-[0.2em] text-[10px] sm:text-xs cursor-pointer">
             <Send class="w-4 h-4 sm:w-5 sm:h-5" />
             <span data-i18n="cart.send">Confirmar Pedido</span>
           </button>
@@ -242,7 +242,6 @@ const allData = {
   // --- 4. ENVÍO WHATSAPP ---
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
-    const lang = currentLang.get();
     const items = cartItems.get();
 
     if (items.length === 0) return alert('Carrito vacío');
@@ -264,7 +263,7 @@ const allData = {
     msg += `👤 *Cliente:* ${name}\n`;
     msg += `🆔 *Cédula:* ${id}\n`;
     msg += `📱 *WhatsApp:* ${phone}\n`;
-    msg += `📅 *Fecha:* ${date}\n`;
+    msg += `📅 *Fecha de Entrega:* ${date}\n`;
     msg += `📍 *Método:* ${method}\n`;
     if(method === 'Delivery') msg += `🏠 *Dirección:* ${address}\n`;
     msg += `💳 *Pago:* ${payment}\n\n`;
