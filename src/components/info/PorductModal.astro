@@ -1,0 +1,167 @@
+---
+// src/components/info/ProductModal.astro
+import { X, ShoppingCart, Info, Sparkles } from '@lucide/astro';
+---
+
+<div 
+  id="product-detail-overlay" 
+  class="fixed inset-0 bg-[#050505]/95 backdrop-blur-xl z-1000 invisible opacity-0 flex items-center justify-center p-0 sm:p-6 transition-all duration-500"
+>
+  <div 
+    id="product-detail-panel" 
+    class="relative w-full h-full sm:h-auto sm:max-w-5xl bg-modal-bg sm:rounded-[2.5rem] overflow-hidden shadow-2xl flex flex-col md:flex-row translate-y-12 scale-[0.9] opacity-0 border border-default-border"
+  >
+    <button id="close-detail" class="absolute top-6 right-6 z-50 p-3 bg-main-text/10 hover:bg-cyan-500 hover:text-black rounded-full text-main-text backdrop-blur-xl transition-all active:scale-90 border border-main-text/10 group cursor-pointer">
+      <X class="w-6 h-6 transition-transform group-hover:rotate-90" />
+    </button>
+
+    <div class="relative w-full md:w-1/2 h-[40vh] md:h-150 overflow-hidden bg-main-text/3">
+      <img id="detail-img" src="" alt="" class="w-full h-full object-cover transition-transform duration-1000 hover:scale-105" />
+      <div class="absolute inset-0 bg-linear-to-t from-modal-bg via-transparent to-transparent md:hidden"></div>
+    </div>
+
+    <div class="w-full md:w-1/2 p-8 sm:p-14 flex flex-col bg-modal-bg">
+      <div class="mb-auto">
+        <div class="flex items-center gap-3 mb-6">
+            <Sparkles class="w-4 h-4 text-cyan-500" />
+            <span id="detail-category" class="text-[10px] uppercase font-black tracking-[0.4em] text-cyan-500">Exclusivo</span>
+        </div>
+
+        <h2 id="detail-title" class="text-4xl sm:text-5xl font-black text-main-text uppercase italic leading-[0.85] tracking-tighter mb-6">
+          Cargando...
+        </h2>
+
+        <div class="space-y-6 mb-10">
+            <p id="detail-description" class="text-main-text/60 text-sm sm:text-base leading-relaxed font-medium">
+              ...
+            </p>
+            
+            <div class="flex flex-col pt-6 border-t border-main-text/10">
+                <span class="text-[9px] uppercase font-black text-main-text/30 tracking-widest mb-1">Inversión</span>
+                <div class="flex items-baseline gap-3">
+                    <span id="detail-price" class="text-5xl font-black text-main-text tracking-tighter">$0.00</span>
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <div class="relative group mt-4">
+        <div class="absolute -inset-1 bg-cyan-500 rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
+        
+        <button 
+          id="detail-add-to-cart" 
+          class="add-to-cart-btn-final relative w-full font-black py-5 sm:py-6 rounded-2xl flex items-center justify-center gap-4 transition-all duration-300 active:scale-[0.98] uppercase text-[11px] tracking-[0.25em] cursor-pointer overflow-hidden shadow-xl"
+        >
+          <ShoppingCart class="w-5 h-5 transition-transform group-hover:-rotate-12" />
+          <span id="btn-text-content">Añadir al carrito</span>
+          
+          <div class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-linear-to-r from-transparent via-white/10 to-transparent group-hover:animate-shine"></div>
+        </button>
+      </div>
+
+      <div class="mt-8 flex items-center justify-between border-t border-main-text/5 pt-6">
+          <div class="flex items-center gap-2">
+            <Info class="w-3 h-3 text-main-text/20" />
+            <span class="text-[8px] text-main-text/30 uppercase font-black tracking-tighter">Midnight Studio © 2026</span>
+          </div>
+          <div class="flex gap-1.5">
+              <div class="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></div>
+              <div class="w-1.5 h-1.5 rounded-full bg-main-text/10"></div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .bg-modal-bg { background-color: var(--modal-bg); }
+  .text-main-text { color: var(--main-text-color); }
+  .border-default-border { border-color: var(--default-border); }
+  
+  /* Lógica de colores del botón forzada */
+  .add-to-cart-btn-final {
+    background-color: var(--main-text-color);
+    color: var(--modal-bg);
+  }
+
+  .add-to-cart-btn-final:hover {
+    background-color: #06b6d4 !important; /* Cyan 500 */
+    color: #000000 !important;
+  }
+
+  @keyframes shine {
+    100% { left: 125%; }
+  }
+  .animate-shine {
+    animation: shine 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @media (max-width: 640px) {
+    #product-detail-panel { max-height: 95vh; overflow-y: auto; }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import { addToCart } from '../../store/cartStore';
+
+  const overlay = document.getElementById('product-detail-overlay');
+  const panel = document.getElementById('product-detail-panel');
+  const closeBtn = document.getElementById('close-detail');
+  const btnText = document.getElementById('btn-text-content');
+  let currentProduct: any = null;
+
+  window.addEventListener('open-product-detail', (e: any) => {
+    const product = e.detail;
+    currentProduct = product;
+
+    // Reset texto del botón por si acaso
+    if (btnText) btnText.innerText = 'Añadir al carrito';
+
+    (document.getElementById('detail-img') as HTMLImageElement).src = product.img;
+    (document.getElementById('detail-title') as HTMLElement).innerText = product.name;
+    (document.getElementById('detail-price') as HTMLElement).innerText = `$${product.price.toFixed(2)}`;
+    (document.getElementById('detail-description') as HTMLElement).innerText = product.description;
+    (document.getElementById('detail-category') as HTMLElement).innerText = product.category || "Exclusivo";
+
+    overlay?.classList.remove('invisible');
+    
+    gsap.to(overlay, { opacity: 1, duration: 0.4 });
+    gsap.fromTo(panel, 
+      { opacity: 0, y: 50, scale: 0.95 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "expo.out" }
+    );
+
+    document.body.style.overflow = 'hidden';
+  });
+
+  const closeDetail = () => {
+    gsap.to(panel, { opacity: 0, y: 20, scale: 0.95, duration: 0.3 });
+    gsap.to(overlay, { 
+      opacity: 0, 
+      duration: 0.3, 
+      onComplete: () => {
+        overlay?.classList.add('invisible');
+        document.body.style.overflow = '';
+      } 
+    });
+  };
+
+  closeBtn?.addEventListener('click', closeDetail);
+  overlay?.addEventListener('click', (e) => { if(e.target === overlay) closeDetail(); });
+
+  document.getElementById('detail-add-to-cart')?.addEventListener('click', () => {
+    if (currentProduct) {
+        addToCart({
+            id: currentProduct.id,
+            name: currentProduct.name,
+            price: currentProduct.price,
+            img: currentProduct.img,
+            quantity: 1
+        });
+        
+        if (btnText) btnText.innerText = '¡Añadido!';
+        setTimeout(closeDetail, 600);
+    }
+  });
+</script>

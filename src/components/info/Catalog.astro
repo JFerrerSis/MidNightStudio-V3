@@ -55,24 +55,17 @@ const initialCategories = ["Todos", ...new Set(productosEs.map(p => p.categoria)
   const categoryContainer = document.getElementById('category-filters');
   const allProducts = JSON.parse(root?.dataset.products || '{}');
   
-  /**
-   * Inicializa los eventos de clic en los botones de filtro.
-   * Se usa addEventListener para evitar errores de tipado de TS y asegurar compatibilidad.
-   */
+  // --- 1. FILTROS DE CATEGORÍA ---
   const initFilterEvents = () => {
     const filterBtns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
     const cards = document.querySelectorAll<HTMLElement>('.product-card');
 
     filterBtns.forEach(btn => {
-      // Usamos addEventListener para cumplir con el estándar de TS
       btn.addEventListener('click', () => {
         const category = btn.getAttribute('data-category');
-        
-        // UI: Limpiar clases activas y marcar el actual
         filterBtns.forEach(b => b.classList.remove('text-cyan-500', 'border-cyan-500'));
         btn.classList.add('text-cyan-500', 'border-cyan-500');
 
-        // Animación de salida
         gsap.to(cards, {
           opacity: 0, 
           scale: 0.9, 
@@ -80,12 +73,10 @@ const initialCategories = ["Todos", ...new Set(productosEs.map(p => p.categoria)
           onComplete: () => {
             cards.forEach(card => {
               const cardCat = card.dataset.cat;
-              // Lógica bilingüe para el botón "Todos"
               const isAll = category === "Todos" || category === "All";
               card.style.display = (isAll || cardCat === category) ? "flex" : "none";
             });
             
-            // Animación de entrada para los elementos filtrados
             gsap.to(".product-card[style*='display: flex']", { 
               opacity: 1, 
               scale: 1, 
@@ -99,18 +90,62 @@ const initialCategories = ["Todos", ...new Set(productosEs.map(p => p.categoria)
     });
   };
 
-  // --- LÓGICA DE TRADUCCIÓN REACTIVA ---
+  // --- 2. EVENTOS PARA EL MODAL DE DETALLE (NUEVO) ---
+// --- 2. EVENTOS PARA EL MODAL DE DETALLE (OPTIMIZADO TOUCH) ---
+  const initProductDetailEvents = () => {
+    const cards = document.querySelectorAll<HTMLElement>('.product-card');
+    
+    cards.forEach(card => {
+      // 1. Buscamos cualquier elemento que deba disparar el modal (imagen o contenedor de imagen)
+      // Asegúrate de que en tu ProductCard.astro la imagen tenga la clase 'product-img'
+      const triggers = card.querySelectorAll('.product-img, .product-title, [data-trigger="modal"]');
+      
+      triggers.forEach(trigger => {
+        // Limpiamos listeners previos para evitar ejecuciones dobles
+        const newTrigger = trigger.cloneNode(true) as HTMLElement;
+        trigger.parentNode?.replaceChild(newTrigger, trigger);
+
+        // Usamos 'click' ya que los navegadores móviles lo mapean automáticamente al touch 
+        // sin el retraso de 300ms en sitios modernos
+        newTrigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation(); // Evita que otros eventos del padre interfieran
+
+          const id = card.dataset.id;
+          const lang = currentLang.get();
+          const info = allProducts[lang].find((p: any) => p.id === id);
+          
+          if (info) {
+            // Disparamos el evento que el ProductModal.astro está escuchando
+            window.dispatchEvent(new CustomEvent('open-product-detail', { 
+              detail: {
+                id: info.id,
+                name: info.nombre,
+                price: info.precio,
+                img: info.imagen,
+                description: info.descripcion,
+                category: info.categoria
+              } 
+            }));
+          }
+        });
+
+        // Feedback visual rápido para touch
+        newTrigger.style.cursor = 'pointer';
+        newTrigger.classList.add('active:opacity-80', 'transition-opacity');
+      });
+    });
+  };
+
+  // --- 3. LÓGICA DE TRADUCCIÓN REACTIVA ---
   currentLang.subscribe((lang: Language) => {
     const currentJson = allProducts[lang];
     const cards = document.querySelectorAll<HTMLElement>('.product-card');
 
-    // 1. REGENERAR BOTONES DE CATEGORÍA DESDE EL JSON ACTUAL
     if (categoryContainer) {
-      // Obtenemos categorías únicas del JSON activo
       const rawCats = [...new Set(currentJson.map((p: any) => p.categoria))];
       const translatedAll = lang === 'es' ? 'Todos' : 'All';
       
-      // Construimos el HTML dinámicamente
       categoryContainer.innerHTML = `
         <button class="filter-btn text-left px-6 py-3 rounded-2xl border border-main-text/10 bg-main-text/5 text-main-text text-[10px] font-bold uppercase tracking-widest hover:border-cyan-500 hover:text-cyan-500 transition-all cursor-pointer whitespace-nowrap lg:whitespace-normal" data-category="${translatedAll}">
           <span>${translatedAll}</span>
@@ -122,32 +157,25 @@ const initialCategories = ["Todos", ...new Set(productosEs.map(p => p.categoria)
         `).join('')}
       `;
       
-      // RE-VINCULAMOS los eventos porque los botones anteriores fueron borrados del DOM
       initFilterEvents();
     }
 
-    // 2. ACTUALIZAR CARDS (Textos y data-cat)
     cards.forEach(card => {
       const id = card.dataset.id;
       const info = currentJson.find((p: any) => p.id === id);
 
       if (info) {
-        // Actualizamos el atributo de categoría para que el filtro funcione con el nombre del JSON actual
         card.dataset.cat = info.categoria; 
-        
         const title = card.querySelector('.product-title');
         const desc = card.querySelector('.product-desc');
         const btn = card.querySelector('.add-to-cart-btn');
 
         if (title) title.textContent = info.nombre;
         if (desc) desc.textContent = info.descripcion;
-        
-        // Actualizamos el objeto del producto para el carrito
         if (btn) btn.setAttribute('data-product', JSON.stringify(info));
       }
     });
 
-    // 3. TEXTOS ESTÁTICOS (data-i18n)
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       if (!key) return;
@@ -156,9 +184,12 @@ const initialCategories = ["Todos", ...new Set(productosEs.map(p => p.categoria)
       keys.forEach(k => { text = text?.[k]; });
       if (text) el.textContent = text;
     });
+
+    // Re-vinculamos los clics de detalle cada vez que cambia el idioma o se renderiza
+    initProductDetailEvents();
   });
 
-  // 4. GESTIÓN DEL CARRITO
+  // --- 4. GESTIÓN DEL CARRITO ---
   document.addEventListener('click', (e) => {
     const target = e.target as HTMLElement;
     const btn = target.closest('.add-to-cart-btn');
@@ -174,7 +205,6 @@ const initialCategories = ["Todos", ...new Set(productosEs.map(p => p.categoria)
       quantity: 1 
     });
 
-    // Feedback visual elástico
     gsap.fromTo(btn, { scale: 0.8 }, { scale: 1, duration: 0.4, ease: "elastic.out(1, 0.3)" });
   });
 </script>

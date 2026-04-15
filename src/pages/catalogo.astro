@@ -3,6 +3,8 @@ import Layout from "../layouts/Layout.astro";
 import Header from "../components/ui/Header.astro";
 import CatalogComponent from "../components/info/Catalog.astro";
 import CartModal from "../components/info/CartModal.astro";
+// IMPORTANTE: Importamos el nuevo modal de detalle
+import ProductModal from "../components/info/PorductModal.astro"; 
 ---
 
 <Layout title="Catálogo Exclusivo | Midnight Studio">
@@ -15,7 +17,7 @@ import CartModal from "../components/info/CartModal.astro";
   </main>
 
   <CartModal />
-</Layout>
+  <ProductModal /> </Layout>
 
 <script>
   import gsap from 'gsap';
@@ -23,7 +25,7 @@ import CartModal from "../components/info/CartModal.astro";
   function initEntrance() {
     const wrapper = document.getElementById('catalog-page-wrapper');
     if (wrapper) {
-      // Seteamos el estado inicial con GSAP y luego animamos
+      // Animación de entrada con GSAP para el contenedor principal
       gsap.fromTo(wrapper, 
         { 
           opacity: 0, 
@@ -34,15 +36,13 @@ import CartModal from "../components/info/CartModal.astro";
           y: 0, 
           duration: 1, 
           ease: "expo.out",
-          delay: 0.2 // Un pequeño respiro para que cargue el DOM
+          delay: 0.2 
         }
       );
     }
   }
 
-  // Ejecución estándar
+  // Ejecución para carga normal y para ViewTransitions de Astro
   window.addEventListener('load', initEntrance);
-  
-  // Soporte por si usas ViewTransitions
   document.addEventListener('astro:page-load', initEntrance);
 </script>
