@@ -118,5 +118,13 @@
     "imagen": "/images/rigidos/lamina.jpeg",
     "categoria": "Papelería",
     "descripcion": "Impresión de alta resolución sobre metal."
+  },
+  {
+    "id": "00018",
+    "nombre": "MOUSEPAD PERSONALIZADO",
+    "precio": 6.00,
+    "imagen": "/images/rigidos/mousepad.jpeg",
+    "categoria": "Papelería",
+    "descripcion": "Impresión de alta resolución sobre metal."
   }
 ]
