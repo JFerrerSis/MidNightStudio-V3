@@ -1,6 +1,6 @@
 ---
 // src/components/info/CartModal.astro
-import { X, Send, Package, User, CheckCircle2, AlertCircle } from '@lucide/astro';
+import { X, Send, Package, User, CheckCircle2, AlertCircle, Palette, Phone } from '@lucide/astro';
 import productosEs from "../../data/productos.json";
 import productosEn from "../../data/productEn.json";
 
@@ -36,7 +36,7 @@ const allData = {
             <User class="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <h2 class="text-2xl sm:text-3xl font-black text-main-text uppercase tracking-tighter italic leading-none" data-i18n="cart.title">Finalizar Pedido</h2>
-          <p class="text-[9px] sm:text-[10px] text-main-text/40 uppercase font-bold tracking-[0.3em] mt-2" data-i18n="cart.subtitle">Datos de entrega exclusiva</p>
+          <p class="text-[9px] sm:text-[10px] text-main-text/40 uppercase font-bold tracking-[0.3em] mt-2" data-i18n="cart.subtitle">Datos de entrega y personalización</p>
         </header>
 
         <form id="whatsapp-form" class="space-y-5 sm:space-y-6" data-wa={whatsappNumber} novalidate>
@@ -55,8 +55,18 @@ const allData = {
 
           <div class="space-y-2">
             <label class="text-[9px] sm:text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.phone">WhatsApp</label>
-            <input type="tel" id="client-phone" placeholder="04121234567" required pattern="^[0-9]{10,15}$"
-              class="cart-input w-full bg-main-text/5 border border-default-border p-3.5 sm:p-4 rounded-2xl text-main-text outline-none focus:border-cyan-500 transition-all text-sm font-bold placeholder:text-main-text/20" />
+            <div class="flex gap-2">
+              <select id="client-prefix" class="w-25 bg-main-text/5 border border-default-border p-3.5 sm:p-4 rounded-2xl text-main-text text-xs font-black outline-none focus:border-cyan-500 cursor-pointer appearance-none">
+                <option value="0412">0412</option>
+                <option value="0414">0414</option>
+                <option value="0424">0424</option>
+                <option value="0416">0416</option>
+                <option value="0426">0426</option>
+                <option value="0422">0422</option>
+              </select>
+              <input type="tel" id="client-phone" placeholder="1234567" required pattern="^[0-9]{7}$"
+                class="cart-input flex-1 bg-main-text/5 border border-default-border p-3.5 sm:p-4 rounded-2xl text-main-text outline-none focus:border-cyan-500 transition-all text-sm font-bold placeholder:text-main-text/20" />
+            </div>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
@@ -68,7 +78,7 @@ const allData = {
               </select>
             </div>
             <div class="space-y-2">
-              <label class="text-[9px] sm:text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.date">Fecha</label>
+              <label class="text-[9px] sm:text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.date">Fecha de Entrega</label>
               <input type="date" id="order-date" required 
                 class="cart-input w-full bg-main-text/5 border border-default-border p-3.5 sm:p-4 rounded-2xl text-main-text text-sm font-bold outline-none focus:border-cyan-500" />
             </div>
@@ -78,6 +88,16 @@ const allData = {
             <label class="text-[9px] sm:text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.address">Dirección</label>
             <textarea id="order-address" placeholder="Calle, Edificio, Apto..." 
               class="cart-input w-full bg-main-text/5 border border-default-border p-3.5 sm:p-4 rounded-2xl text-main-text outline-none focus:border-cyan-500 text-sm font-medium resize-none h-20 placeholder:text-main-text/20"></textarea>
+          </div>
+
+          <div class="space-y-2">
+            <label class="text-[9px] sm:text-[10px] uppercase font-black text-main-text/40 ml-2" data-i18n="cart.details">Detalles del Diseño / Personalización</label>
+            <textarea id="order-details" placeholder="Colores, nombres, o cambios específicos que desees..." 
+              class="cart-input w-full bg-main-text/5 border border-default-border p-3.5 sm:p-4 rounded-2xl text-main-text outline-none focus:border-cyan-500 text-sm font-medium resize-none h-24 placeholder:text-main-text/20"></textarea>
+            <div class="flex items-center gap-2 ml-2 mt-1">
+              <div class="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></div>
+              <p class="text-[8px] text-cyan-500/80 font-bold uppercase tracking-wider">Podrás adjuntar tus imágenes al abrir WhatsApp</p>
+            </div>
           </div>
 
           <div class="space-y-2">
@@ -134,7 +154,6 @@ const allData = {
   .text-main-text { color: var(--main-text-color); }
   .text-modal-bg { color: var(--modal-bg); }
 
-  /* Toast Styles */
   .toast-card {
     background: var(--modal-bg);
     border: 1px solid var(--default-border);
@@ -176,33 +195,21 @@ const allData = {
   const methodSelect = document.getElementById('order-method') as HTMLSelectElement;
   const addressWrapper = document.getElementById('address-wrapper');
   const addressField = document.getElementById('order-address') as HTMLTextAreaElement;
+  const detailsField = document.getElementById('order-details') as HTMLTextAreaElement;
   const allProductsData = JSON.parse(overlay?.dataset.allProducts || '{}');
 
-  // --- SISTEMA DE TOASTS ---
   const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
     const container = document.getElementById('toast-container');
     if (!container) return;
-
     const toast = document.createElement('div');
     const icon = type === 'success' ? '✨' : type === 'error' ? '🚫' : '⚠️';
-    
     toast.className = `toast-card toast-${type} opacity-0 translate-y-[-20px]`;
-    toast.innerHTML = `
-      <span class="text-xl">${icon}</span>
-      <div class="flex flex-col">
-        <p class="text-[10px] font-black uppercase tracking-widest text-main-text">${message}</p>
-      </div>
-    `;
-
+    toast.innerHTML = `<span class="text-xl">${icon}</span><div><p class="text-[10px] font-black uppercase tracking-widest text-main-text">${message}</p></div>`;
     container.appendChild(toast);
     gsap.to(toast, { opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.7)" });
-
-    setTimeout(() => {
-      gsap.to(toast, { opacity: 0, scale: 0.9, duration: 0.3, onComplete: () => toast.remove() });
-    }, 4000);
+    setTimeout(() => { gsap.to(toast, { opacity: 0, scale: 0.9, duration: 0.3, onComplete: () => toast.remove() }); }, 4000);
   };
 
-  // --- CONTROL DE APERTURA ---
   isCartOpen.subscribe((open) => {
     if (open) {
       overlay?.classList.remove('invisible');
@@ -221,7 +228,6 @@ const allData = {
   document.getElementById('close-cart')?.addEventListener('click', () => isCartOpen.set(false));
   overlay?.addEventListener('click', (e) => { if(e.target === overlay) isCartOpen.set(false); });
 
-  // --- VALIDACIONES ---
   const validateField = (input: HTMLInputElement | HTMLTextAreaElement) => {
     if (!input.checkValidity()) {
       input.classList.add('input-error');
@@ -238,14 +244,12 @@ const allData = {
     addressField.required = isDelivery;
   });
 
-  // --- RENDERIZADO ---
   const renderCart = () => {
     const items = cartItems.get();
     const lang = currentLang.get();
     const container = document.getElementById('cart-items-container');
     const totalDisplay = document.getElementById('cart-total-price');
     if (!container || !totalDisplay) return;
-
     if (items.length === 0) {
       container.innerHTML = `<div class="h-40 flex flex-col items-center justify-center opacity-20 font-black uppercase text-[10px] tracking-[0.3em] text-main-text">Tu selección está vacía</div>`;
     } else {
@@ -270,47 +274,47 @@ const allData = {
 
   cartItems.subscribe(() => renderCart());
 
-  // --- ENVÍO ---
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
     const items = cartItems.get();
-
-    if (items.length === 0) {
-      showToast('Añade al menos un producto', 'warning');
-      return;
-    }
+    if (items.length === 0) { showToast('Añade productos', 'warning'); return; }
 
     const inputs = form.querySelectorAll('input[required], textarea[required]');
     let isValid = true;
     inputs.forEach((input: any) => { if (!validateField(input)) isValid = false; });
-
-    if (!isValid) {
-      showToast('Revisa los datos marcados', 'error');
-      return;
-    }
-
-    showToast('Redirigiendo a WhatsApp...', 'success');
+    if (!isValid) { showToast('Revisa los datos', 'error'); return; }
 
     const name = (document.getElementById('client-name') as HTMLInputElement).value;
     const id = (document.getElementById('client-id') as HTMLInputElement).value;
-    const phone = (document.getElementById('client-phone') as HTMLInputElement).value;
+    
+    // Nueva captura de teléfono
+    const prefix = (document.getElementById('client-prefix') as HTMLSelectElement).value;
+    const phoneNum = (document.getElementById('client-phone') as HTMLInputElement).value;
+    const fullPhone = `${prefix}-${phoneNum}`;
+
     const method = methodSelect.value;
     const payment = (document.getElementById('order-payment') as HTMLSelectElement).value;
     const date = (document.getElementById('order-date') as HTMLInputElement).value;
     const address = addressField.value;
+    const details = detailsField.value;
 
     let msg = `*✨ MIDNIGHT STUDIO - PEDIDO ✨*\n\n`;
     msg += `👤 *Cliente:* ${name}\n`;
     msg += `🆔 *Cédula:* ${id}\n`;
-    msg += `📱 *WhatsApp:* ${phone}\n`;
-    msg += `📅 *Fecha:* ${date}\n`;
+    msg += `📱 *WhatsApp:* ${fullPhone}\n`;
+    msg += `📅 *Fecha Entrega:* ${date}\n`;
     msg += `📍 *Método:* ${method}\n`;
     if(method === 'Delivery') msg += `🏠 *Dirección:* ${address}\n`;
     msg += `💳 *Pago:* ${payment}\n\n`;
+    
+    if(details) msg += `🎨 *DETALLES DISEÑO:*\n${details}\n\n`;
+    
     msg += `📦 *PRODUCTOS:*\n`;
     items.forEach(i => { msg += `• ${i.quantity}x ${i.name} ($${(i.price * i.quantity).toFixed(2)})\n`; });
-    msg += `\n💰 *TOTAL: $${cartTotal.get().toFixed(2)}*`;
+    msg += `\n💰 *TOTAL: $${cartTotal.get().toFixed(2)}*\n\n`;
+    msg += `_⚠️ Por favor, adjunte las imágenes de referencia a continuación._`;
 
+    showToast('Abriendo WhatsApp...', 'success');
     setTimeout(() => {
         window.open(`https://wa.me/${form.dataset.wa}?text=${encodeURIComponent(msg)}`, '_blank');
         isCartOpen.set(false);
